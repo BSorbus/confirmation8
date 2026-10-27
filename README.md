@@ -35,7 +35,7 @@ search_url: https://…/certificates/new
 
 Edycja: `bin/rails credentials:edit --environment production`. Klucze `config/credentials/*.key`
 nie są w repozytorium – trzeba je przechowywać bezpiecznie i skopiować na serwer przy wdrożeniu.
-Każdą wartość można nadpisać zmienną środowiskową (`NETPAR_URL`, `NETPAR_USER`, `NETPAR_PASSWORD`,
+Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). Każdą wartość można nadpisać zmienną środowiskową (`NETPAR_URL`, `NETPAR_USER`, `NETPAR_PASSWORD`,
 `CONFIRMATION_SEARCH_URL`) – patrz `config/initializers/confirmation.rb`.
 
 ## Testy i kontrola jakości
@@ -50,7 +50,7 @@ bin/brakeman       # bezpieczeństwo
 
 | Plik / zmienna | Znaczenie |
 |---|---|
-| `config/confirmation.yml` | wartości domyślne, Matomo, kategorie |
+| `config/confirmation.yml` | ustawienia niezależne od serwera: limity czasu NETPAR, kategorie, Matomo |
 | `CONFIRMATION_CATEGORIES` | widoczne kategorie, domyślnie `M,L,R` |
 | `MATOMO_ENABLED` | statystyki Matomo w produkcji (domyślnie `true`) |
 | `config/divisions.yml` | rodzaje świadectw – dosłowna kopia tabeli `divisions` z NETPAR |
