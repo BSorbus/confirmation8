@@ -30,3 +30,7 @@
 # Ignore key files for decrypting credentials and more.
 /config/credentials/*.key
 
+
+# Konfiguracja wdrożeń (adresy serwerów) i credentials przygotowane dla poszczególnych serwerów – tylko lokalnie.
+/config/deploy.rb
+/config/deploy/

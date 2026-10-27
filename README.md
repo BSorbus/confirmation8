@@ -38,6 +38,16 @@ nie są w repozytorium – trzeba je przechowywać bezpiecznie i skopiować na s
 Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). Każdą wartość można nadpisać zmienną środowiskową (`NETPAR_URL`, `NETPAR_USER`, `NETPAR_PASSWORD`,
 `CONFIRMATION_SEARCH_URL`) – patrz `config/initializers/confirmation.rb`.
 
+## Wdrożenie (mina)
+
+`config/deploy.rb` (adresy serwerów) i `config/deploy/<serwer>/` (credentials przygotowane dla danego serwera)
+są tylko lokalnie – w `.gitignore`. Opis zadań na początku `config/deploy.rb`; podgląd poleceń bez wykonywania:
+`bundle exec mina test2 deploy --simulate`.
+
+Każdy serwer ma własną kopię credentials w `shared/config/credentials/` (pierwszeństwo przed wersją z git).
+Zmiana na serwerze: `cd /webapps/confirmation8/current && EDITOR=nano RAILS_ENV=production bin/rails credentials:edit --environment production`,
+potem `bundle exec mina test2 restart`.
+
 ## Testy i kontrola jakości
 
 ```sh
