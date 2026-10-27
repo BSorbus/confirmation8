@@ -7,6 +7,8 @@ pl:
       logo_file: "confirmation_pl.png"
       logo_alt: "Confirmation – Urząd Komunikacji Elektronicznej, strona główna"
       menu: "Menu"
+      theme:
+        dark: "Tryb ciemny"
       language:
         label: "Język"
         pl: "Polski"

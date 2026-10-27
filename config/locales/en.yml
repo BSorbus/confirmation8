@@ -7,6 +7,8 @@ en:
       logo_file: "confirmation_en.png"
       logo_alt: "Confirmation – Office of Electronic Communications, home page"
       menu: "Menu"
+      theme:
+        dark: "Dark mode"
       language:
         label: "Language"
         pl: "Polski"

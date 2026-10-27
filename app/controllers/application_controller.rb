@@ -4,6 +4,9 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
+  # Limit wyszukiwań i pobrań PDF z jednego adresu IP (rate_limit w kontrolerach).
+  SEARCH_RATE_LIMIT = 50
+
   around_action :switch_locale
 
   def default_url_options = { locale: I18n.locale }

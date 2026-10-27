@@ -1,5 +1,5 @@
 class CertificatesController < ApplicationController
-  rate_limit to: 10, within: 1.minute, only: :create, with: -> { set_category; render_outcome(:too_many_requests, :too_many_requests) }
+  rate_limit to: SEARCH_RATE_LIMIT, within: 1.minute, only: :create, with: -> { set_category; render_outcome(:too_many_requests, :too_many_requests) }
 
   before_action :set_category
 

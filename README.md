@@ -31,6 +31,8 @@ netpar:
   user: confirmation
   password: …
 search_url: https://…/certificates/new
+matomo:
+  enabled: false            # opcjonalnie, np. serwer testowy bez statystyk
 ```
 
 Edycja: `bin/rails credentials:edit --environment production`. Klucze `config/credentials/*.key`
@@ -63,7 +65,7 @@ bin/brakeman       # bezpieczeństwo
 |---|---|
 | `config/confirmation.yml` | ustawienia niezależne od serwera: limity czasu NETPAR, kategorie, Matomo |
 | `CONFIRMATION_CATEGORIES` | widoczne kategorie, domyślnie `M,L,R` |
-| `MATOMO_ENABLED` | statystyki Matomo w produkcji (domyślnie `true`) |
+| `matomo.enabled` w credentials (lub `MATOMO_ENABLED`) | statystyki Matomo w produkcji (domyślnie włączone; na serwerze testowym `false`) |
 | `config/divisions.yml` | rodzaje świadectw – dosłowna kopia tabeli `divisions` z NETPAR |
 
 ## Współpraca z NETPAR

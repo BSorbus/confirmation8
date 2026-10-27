@@ -16,6 +16,14 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "nagłówek: przycisk trybu jasny/ciemny, deklaracja dostępności tylko w stopce" do
+    get "/pl/certificates/maritime"
+    assert_select "header button.theme-toggle[data-controller=theme][aria-pressed]", 1
+    assert_select "header a[href='/pl/declaration']", 0
+    assert_select "footer a[href='/pl/declaration']", 1
+    assert_match 'setAttribute("data-bs-theme"', response.body # tryb ustawiany w <head>, bez mignięcia
+  end
+
   test "przełącznik języka prowadzi do tej samej strony w drugim języku" do
     get "/pl/certificates/aeronautical"
     assert_select "a.lang-switch__link[hreflang=en][href='/en/certificates/aeronautical']"
@@ -133,11 +141,11 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "Pobierz zaświadczenie (PDF)", response.body
   end
 
-  test "limit zapytań: 10 na minutę z jednego adresu" do
+  test "limit zapytań: 50 na minutę z jednego adresu" do
     stub_netpar_token
     stub_netpar_search(status: 404)
 
-    10.times { search! }
+    ApplicationController::SEARCH_RATE_LIMIT.times { search! }
     assert_response :success
     search!
     assert_response :too_many_requests

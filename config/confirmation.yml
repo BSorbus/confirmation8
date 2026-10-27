@@ -21,5 +21,6 @@ test:
   search_url: https://confirmation.test/certificates/new
 
 production:
+  # Na serwerze testowym wyłączane w credentials (matomo.enabled: false) – patrz initializer.
   matomo:
-    enabled: <%= ENV.fetch("MATOMO_ENABLED", "true") == "true" %>
+    enabled: true

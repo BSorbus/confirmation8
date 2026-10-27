@@ -1,7 +1,7 @@
 # Zaświadczenie PDF. Dane świadectwa są za każdym razem ponownie potwierdzane w NETPAR –
 # nie da się wygenerować zaświadczenia z danymi, których NETPAR nie potwierdził.
 class StatementsController < ApplicationController
-  rate_limit to: 10, within: 1.minute, with: -> { redirect_back_to_form(t(".too_many_requests")) }
+  rate_limit to: SEARCH_RATE_LIMIT, within: 1.minute, with: -> { redirect_back_to_form(t(".too_many_requests")) }
 
   before_action :set_category
 
