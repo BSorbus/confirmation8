@@ -93,6 +93,7 @@ class PdfStatement < Prawn::Document
     def footer
       stroke_color "BECC25"
       stroke_line [0, 10], [525,10], self.line_width = 2.0
-      text "generated from https://confirmation.uke.gov.pl,  e-mail: ske.gdynia@uke.gov.pl,  © 2018 UKE", size: 6, :style => :italic, :align => :right, :valign => :bottom
+      # Rok końcowy – bieżący (zmiana zatwierdzona 2026-10-27; wcześniej „© 2018 UKE”).
+      text "generated from https://confirmation.uke.gov.pl,  e-mail: ske.gdynia@uke.gov.pl,  © 2018–#{Time.current.year} UKE", size: 6, :style => :italic, :align => :right, :valign => :bottom
     end
 end

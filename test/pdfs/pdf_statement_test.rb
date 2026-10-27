@@ -25,7 +25,7 @@ class PdfStatementTest < ActiveSupport::TestCase
       "has been issued for Kozłowski Jan Maria (date of birth 1969-07-06)."
     ].each { assert_includes text, it }
     # pdf-reader skleja wielokrotne spacje przy odczycie – porównujemy po ich ujednoliceniu.
-    assert_includes text.squish, "generated from https://confirmation.uke.gov.pl,  e-mail: ske.gdynia@uke.gov.pl,  © 2018 UKE".squish
+    assert_includes text.squish, "generated from https://confirmation.uke.gov.pl,  e-mail: ske.gdynia@uke.gov.pl,  © 2018–#{Time.current.year} UKE".squish
     assert_includes text.squish, "The above certificate has been issued according to ITU Radio Regulations and the IMO STCW Convention by the President of the Office of Electronic Communications."
   end
 
