@@ -23,11 +23,12 @@
 
       <% if category.statement? %>
         <%= form_with url: category_statement_path(category), scope: :certificate_search, data: { turbo: false }, class: "result-card__pdf" do |f| %>
-          <%# Te same dane co w wyszukiwaniu – PDF powstaje dopiero po ponownym potwierdzeniu w NETPAR. %>
+          <%# Te same dane co w wyszukiwaniu – PDF powstaje dopiero po ponownym potwierdzeniu w NETPAR.
+              Bez id: inaczej powtarzałyby identyfikatory pól formularza wyszukiwania (WCAG 4.1.1). %>
           <% %i[division_id number date_of_issue valid_thru name given_names birth_date].each do |attribute| %>
-            <%= f.hidden_field attribute, value: search.public_send(attribute) %>
+            <%= f.hidden_field attribute, value: search.public_send(attribute), id: nil %>
           <% end %>
-          <%= f.hidden_field :no_expiry, value: search.no_expiry ? "1" : "0" %>
+          <%= f.hidden_field :no_expiry, value: search.no_expiry ? "1" : "0", id: nil %>
           <button type="submit" class="btn btn-primary btn-lg">
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>
             <%= t(".download_pdf") %>

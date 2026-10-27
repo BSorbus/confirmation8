@@ -93,6 +93,8 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#search_result h2", "Świadectwo potwierdzone"
     assert_select "aside#search_result.has-result" # na telefonie wynik nad formularzem
+    ids = css_select("[id]").map { it["id"] }
+    assert_equal ids.uniq, ids, "zdublowane id (np. ukryte pola formularza PDF)" # WCAG 4.1.1
   end
 
   test "status ważności: bezterminowe i wygasłe" do

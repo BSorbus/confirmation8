@@ -42,6 +42,7 @@
   --warn: #8A4B00;
   --warn-bg: #FFF4E0;
   --focus: #F5B400;
+  --focus-ring: #10265C;
   --ok-solid: #1E7B34;      /* tło plakietek z białym tekstem */
   --bad-solid: #B42318;
   --surface: #FFFFFF;       /* karty, treść */
@@ -111,9 +112,10 @@ main { flex: 1 0 auto; outline: none; }
 
 /* Widoczny fokus przy obsłudze klawiaturą */
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, [tabindex="-1"]:focus-visible {
+  /* Dwukolorowy wskaźnik fokusu: żółta obwódka + granatowa linia wewnątrz – kontrast ≥ 3:1 na każdym tle (WCAG 1.4.11). */
   outline: 3px solid var(--focus);
   outline-offset: 2px;
-  box-shadow: none;
+  box-shadow: 0 0 0 2px var(--focus-ring);
 }
 [tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
 
@@ -309,6 +311,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .number-group__prefix { border-radius: 6px 0 0 6px; }
   .number-group__digits { flex: 1 1 0; }
   .category-tabs__tab { flex-direction: column; gap: 2px; font-size: 0.875rem; min-height: 64px; }
+}
+/* Bardzo wąskie ekrany (np. 320 px lub powiększenie 400%) – zakładki bez ucinania długich nazw (WCAG 1.4.10). */
+@media (max-width: 399.98px) {
+  .category-tabs__tab { font-size: 0.75rem; padding: 0 4px; min-width: 0; text-align: center; overflow-wrap: anywhere; }
   .site-footer__inner { grid-template-columns: minmax(0, 1fr); }
   .form-actions__buttons { width: 100%; }
   .form-actions__buttons .btn { flex: 1 1 auto; }
@@ -327,6 +333,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   --bad: #FF8080; --bad-dark: #FF8080; --bad-bg: #000000; --bad-solid: #000000;
   --warn: #FFFF00; --warn-bg: #000000;
   --focus: #00FFFF;
+  --focus-ring: #000000;
   --shadow: none;
   --brand-c: #FFFFFF; --brand-text: #FFFFFF;
   --bs-link-color-rgb: 255, 255, 0; --bs-link-hover-color: #FFFFFF; --bs-link-hover-color-rgb: 255, 255, 255;
