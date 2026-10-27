@@ -25,6 +25,7 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_select "header img", 0 # znak tekstowy zamiast obrazka
     assert_select "header a[href='/pl/declaration']", 0
     assert_select "footer a[href='/pl/declaration']", 1
+    assert_select "footer .site-footer__copy", "© 2018–#{Date.current.year} UKE"
     assert_match 'setAttribute("data-theme"', response.body # tryb ustawiany w <head>, bez mignięcia
     assert_match "prefers-contrast: more", response.body
   end
