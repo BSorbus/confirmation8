@@ -16,6 +16,28 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "przełącznik języka prowadzi do tej samej strony w drugim języku" do
+    get "/pl/certificates/aeronautical"
+    assert_select "a.lang-switch__link[hreflang=en][href='/en/certificates/aeronautical']"
+    assert_select "a.lang-switch__link.is-current[hreflang=pl][href='/pl/certificates/aeronautical']"
+
+    get "/"
+    assert_select "a.lang-switch__link[hreflang=pl][href='/pl/certificates/maritime']"
+
+    get "/pl/declaration"
+    assert_select "a.lang-switch__link[hreflang=en][href='/en/declaration']"
+  end
+
+  test "przełącznik języka zachowuje dane z kodu QR, ale tylko znane parametry" do
+    get "/certificates/new", params: { number_prefix: "GG-", number: "05998", script_name: "//evil.example", host: "evil.example" }
+
+    link = css_select("a.lang-switch__link[hreflang=pl]").first["href"]
+    assert link.start_with?("/pl/certificates/maritime?"), link
+    assert_includes link, "number=05998"
+    assert_includes link, "number_prefix=GG-"
+    assert_no_match(/evil/, link)
+  end
+
   test "lista rodzajów: nazwy z NETPAR, prefiks w atrybucie" do
     get "/pl/certificates/maritime"
     assert_select "select#certificate_search_division_id option[value='14'][data-prefix='GS-']", "świadectwo operatora łączności bliskiego zasięgu SRC"
