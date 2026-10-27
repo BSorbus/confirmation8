@@ -45,8 +45,9 @@ są tylko lokalnie – w `.gitignore`. Opis zadań na początku `config/deploy.r
 `bundle exec mina test2 deploy --simulate`.
 
 Każdy serwer ma własną kopię credentials w `shared/config/credentials/` (pierwszeństwo przed wersją z git).
-Zmiana na serwerze: `cd /webapps/confirmation8/current && EDITOR=nano RAILS_ENV=production bin/rails credentials:edit --environment production`,
-potem `bundle exec mina test2 restart`.
+Zmiana na serwerze: `cd /webapps/confirmation8/current && EDITOR=nano bin/credentials-edit production`,
+potem `touch tmp/restart.txt`. Nie używać tam `bin/rails credentials:edit` – zapisuje przez `mv` i zastąpiłby
+dowiązanie do `shared/` zwykłym plikiem w wydaniu (zmiana zniknęłaby przy następnym wdrożeniu).
 
 ## Testy i kontrola jakości
 
