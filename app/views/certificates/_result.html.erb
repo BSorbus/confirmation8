@@ -1,0 +1,80 @@
+<% case outcome %>
+<% when :found %>
+  <section class="result-card result-card--found" data-controller="result" aria-labelledby="result_heading">
+    <div class="result-card__head">
+      <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg>
+      <div>
+        <h2 id="result_heading" tabindex="-1" data-result-target="heading"><%= t(".found.title") %></h2>
+        <p><%= t(".found.subtitle") %></p>
+      </div>
+    </div>
+    <div class="result-card__body">
+      <%= validity_badge(certificate) %>
+      <dl class="result-details">
+        <div class="result-details__wide">
+          <dt><%= t(".division") %></dt>
+          <dd><%= certificate.division.label %></dd>
+        </div>
+        <div><dt><%= t(".number") %></dt><dd><%= certificate.number %></dd></div>
+        <div><dt><%= t(".date_of_issue") %></dt><dd><%= display_date(certificate.date_of_issue) %></dd></div>
+        <div><dt><%= t(".holder") %></dt><dd><%= certificate.holder.given_names %> <%= certificate.holder.name %></dd></div>
+        <div><dt><%= t(".birth_date") %></dt><dd><%= display_date(certificate.holder.birth_date) %></dd></div>
+      </dl>
+
+      <% if category.statement? %>
+        <%= form_with url: category_statement_path(category), scope: :certificate_search, data: { turbo: false }, class: "result-card__pdf" do |f| %>
+          <%# Te same dane co w wyszukiwaniu – PDF powstaje dopiero po ponownym potwierdzeniu w NETPAR. %>
+          <% %i[division_id number date_of_issue valid_thru name given_names birth_date].each do |attribute| %>
+            <%= f.hidden_field attribute, value: search.public_send(attribute) %>
+          <% end %>
+          <%= f.hidden_field :no_expiry, value: search.no_expiry ? "1" : "0" %>
+          <button type="submit" class="btn btn-primary btn-lg">
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>
+            <%= t(".download_pdf") %>
+          </button>
+        <% end %>
+      <% end %>
+      <p class="result-card__note"><%= t(".as_of", time: l(Time.current, format: :result)) %></p>
+    </div>
+  </section>
+
+<% when :not_found %>
+  <section class="result-card result-card--not-found" data-controller="result" aria-labelledby="result_heading">
+    <div class="result-card__head">
+      <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6m0-6 6 6"/></svg>
+      <div>
+        <h2 id="result_heading" tabindex="-1" data-result-target="heading"><%= t(".not_found.title") %></h2>
+        <p><%= t(".not_found.subtitle") %></p>
+      </div>
+    </div>
+    <div class="result-card__body">
+      <p class="fw-semibold"><%= t(".not_found.check") %></p>
+      <ul>
+        <% t(".not_found.tips").each do |tip| %><li><%= tip %></li><% end %>
+      </ul>
+      <p><%= t(".not_found.contact_html", mail: mail_to(t("layouts.footer.contact_mail"))) %></p>
+    </div>
+  </section>
+
+<% when :unavailable, :too_many_requests %>
+  <section class="result-card result-card--warning" data-controller="result" aria-labelledby="result_heading">
+    <div class="result-card__head">
+      <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <div>
+        <h2 id="result_heading" tabindex="-1" data-result-target="heading"><%= t(".#{outcome}.title") %></h2>
+      </div>
+    </div>
+    <div class="result-card__body"><p><%= t(".#{outcome}.body") %></p></div>
+  </section>
+
+<% when :invalid %>
+  <div class="info-card"><p><%= t(".invalid") %></p></div>
+
+<% else %>
+  <div class="info-card">
+    <h2><%= t(".how.title") %></h2>
+    <ol>
+      <% t(".how.steps").each do |step| %><li><%= step %></li><% end %>
+    </ol>
+  </div>
+<% end %>

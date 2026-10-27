@@ -1,0 +1,29 @@
+<% content_for :title, "#{t(".title")} – #{t("layouts.title")}" %>
+
+<section class="hero">
+  <div class="hero__inner">
+    <h1><%= t(".title") %></h1>
+    <p class="hero__lead"><%= t(".lead") %></p>
+    <p class="hero__qr">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg>
+      <%= t(".qr_tip") %>
+    </p>
+  </div>
+</section>
+
+<div class="page-grid">
+  <div class="search-card">
+    <nav class="category-tabs" aria-label="<%= t(".categories_label") %>">
+      <% Category.enabled.each do |category| %>
+        <%= link_to category_certificates_path(category), class: [ "category-tabs__tab", ("is-current" if category == @category) ],
+                                                         aria: { current: (category == @category ? "page" : nil) } do %>
+          <%= render "certificates/category_icon", category: %>
+          <span><%= t("categories.#{category.slug}") %></span>
+        <% end %>
+      <% end %>
+    </nav>
+    <%= render "certificates/form", search: @search, category: @category %>
+  </div>
+
+  <%= render "certificates/result_column", outcome: @outcome, certificate: @certificate, search: @search, category: @category %>
+</div>

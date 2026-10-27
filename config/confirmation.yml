@@ -1,0 +1,32 @@
+# Ustawienia aplikacji – wartości domyślne. Adres, użytkownik i hasło API NETPAR oraz search_url
+# pochodzą z credentials (lub zmiennych środowiskowych) – patrz config/initializers/confirmation.rb.
+shared:
+  netpar:
+    user: confirmation
+    open_timeout: 5
+    read_timeout: 10
+  # Kategorie widoczne w formularzu (kody jak w NETPAR: M, L, R). Kategorie L i R wymagają
+  # w NETPAR endpointu certificates/search_by_multi_params – do tego czasu można je wyłączyć
+  # zmienną CONFIRMATION_CATEGORIES=M.
+  categories: <%= ENV.fetch("CONFIRMATION_CATEGORIES", "M,L,R").split(",").map(&:strip) %>
+  matomo:
+    enabled: false
+    url: https://stats.uke.gov.pl/
+    site_id: 6
+
+development:
+  netpar:
+    url: http://localhost:3001/api/v1
+  search_url: http://localhost:3000/certificates/new
+
+test:
+  netpar:
+    url: https://netpar.test/api/v1
+  search_url: https://confirmation.test/certificates/new
+
+production:
+  netpar:
+    url: https://netpar2015.uke.gov.pl:8443/api/v1
+  search_url: https://confirmation.uke.gov.pl/certificates/new
+  matomo:
+    enabled: <%= ENV.fetch("MATOMO_ENABLED", "true") == "true" %>

@@ -1,0 +1,141 @@
+pl:
+  layouts:
+    title: "Confirmation – Urząd Komunikacji Elektronicznej"
+    description: "Weryfikacja świadectw operatorów urządzeń radiowych wydanych przez Urząd Komunikacji Elektronicznej"
+    skip_to_content: "Przejdź do treści"
+    header:
+      logo_file: "confirmation_pl.png"
+      logo_alt: "Confirmation – Urząd Komunikacji Elektronicznej, strona główna"
+      menu: "Menu"
+      language:
+        label: "Język"
+        pl: "Polski"
+        en: "English"
+    footer:
+      brand: "Urząd Komunikacji Elektronicznej"
+      brand_note: "Regulator rynku telekomunikacyjnego i pocztowego"
+      contact: "Kontakt"
+      contact_mail: "ske.gdynia@uke.gov.pl"
+      links: "Zobacz też"
+      uke_url: "https://uke.gov.pl"
+
+  categories:
+    maritime: "Morskie"
+    aeronautical: "Lotnicze"
+    amateur: "Radioamatorskie"
+
+  certificates:
+    new:
+      title: "Sprawdź autentyczność świadectwa"
+      lead: "Wpisz dane ze świadectwa. Wynik pochodzi bezpośrednio z rejestru świadectw prowadzonego przez urząd."
+      qr_tip: "Masz zaświadczenie z kodem QR? Zeskanuj go telefonem – formularz wypełni się sam."
+      categories_label: "Kategoria świadectwa"
+      result_label: "Wynik wyszukiwania"
+    form:
+      error_summary:
+        one: "Popraw 1 pole, aby kontynuować"
+        few: "Popraw %{count} pola, aby kontynuować"
+        many: "Popraw %{count} pól, aby kontynuować"
+        other: "Popraw %{count} pola, aby kontynuować"
+      certificate_data: "1. Dane świadectwa"
+      holder_data: "2. Dane posiadacza"
+      choose_division: "Wybierz rodzaj świadectwa"
+      number_hint:
+        maritime: "wybierz rodzaj świadectwa i wpisz 5 cyfr numeru, np. 05998"
+        aeronautical: "wybierz rodzaj świadectwa i wpisz od 2 do 5 cyfr numeru, np. 1234"
+        amateur: "wybierz rodzaj świadectwa i wpisz od 2 do 5 cyfr numeru, np. 12345"
+      no_expiry: "Świadectwo bezterminowe (brak daty ważności)"
+      national_chars:
+        summary: "Jak wpisać znaki narodowe (ą, ł, ü, č…)?"
+        body: "Nazwisko i imiona możesz wpisać ze znakami narodowymi albo bez nich – oba sposoby są poprawne. Jeśli na Twojej klawiaturze brakuje potrzebnych liter (np. czeskich lub niemieckich), wpisz je bez akcentów: Kozłowski → Kozlowski, Müller → Muller, Kateřina → Katerina."
+      required_note: "– pole wymagane"
+      clear: "Wyczyść"
+      submit: "Sprawdź świadectwo"
+    result:
+      division: "Rodzaj"
+      number: "Numer"
+      date_of_issue: "Data wydania"
+      holder: "Posiadacz"
+      birth_date: "Data urodzenia"
+      valid_until: "Ważne do %{date}"
+      unlimited: "Bezterminowe"
+      expired: "Wygasło %{date}"
+      download_pdf: "Pobierz zaświadczenie (PDF)"
+      as_of: "Dane z rejestru według stanu na %{time}."
+      found:
+        title: "Świadectwo potwierdzone"
+        subtitle: "Znaleziono w rejestrze świadectw"
+      not_found:
+        title: "Nie znaleziono świadectwa"
+        subtitle: "Podane dane nie pasują do żadnego wpisu w rejestrze"
+        check: "Sprawdź przede wszystkim:"
+        tips:
+          - "rodzaj i numer świadectwa,"
+          - "daty – wydania, ważności i urodzenia,"
+          - "pisownię nazwiska i wszystkich imion."
+        contact_html: "Dane są poprawne, a wynik nadal negatywny? Napisz: %{mail}"
+      unavailable:
+        title: "Weryfikacja chwilowo niedostępna"
+        body: "Nie udało się połączyć z rejestrem świadectw. Spróbuj ponownie za kilka minut."
+      too_many_requests:
+        title: "Zbyt wiele prób"
+        body: "Wykonano zbyt wiele wyszukiwań w krótkim czasie. Odczekaj minutę i spróbuj ponownie."
+      invalid: "Uzupełnij zaznaczone pola – wynik pojawi się tutaj."
+      how:
+        title: "Jak to działa?"
+        steps:
+          - "Wybierz kategorię i rodzaj świadectwa."
+          - "Przepisz dane dokładnie tak, jak na świadectwie, i kliknij „Sprawdź świadectwo”."
+          - "Jeśli świadectwo jest w rejestrze, zobaczysz jego dane."
+
+  statements:
+    create:
+      not_confirmed: "Nie można wygenerować zaświadczenia: świadectwo nie zostało potwierdzone w rejestrze."
+      unavailable: "Nie można wygenerować zaświadczenia: rejestr świadectw jest chwilowo niedostępny. Spróbuj ponownie za kilka minut."
+      too_many_requests: "Zbyt wiele prób w krótkim czasie. Odczekaj minutę i spróbuj ponownie."
+
+  pages:
+    declaration:
+      title: "Deklaracja dostępności"
+
+  activemodel:
+    attributes:
+      certificate_search:
+        division_id: "Rodzaj świadectwa"
+        number: "Numer świadectwa"
+        date_of_issue: "Data wydania"
+        valid_thru: "Ważne do"
+        no_expiry: "Świadectwo bezterminowe"
+        name: "Nazwisko"
+        given_names: "Imiona"
+        birth_date: "Data urodzenia"
+    errors:
+      models:
+        certificate_search:
+          attributes:
+            division_id:
+              inclusion: "– wybierz z listy"
+            valid_thru:
+              blank: "nie może być puste – jeśli świadectwo nie ma daty ważności, zaznacz „Świadectwo bezterminowe”"
+
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      blank: "nie może być puste"
+      inclusion: "nie znajduje się na liście dopuszczalnych wartości"
+      invalid_date: "nie jest poprawną datą"
+      number_exact_digits: "musi mieć dokładnie %{min} cyfr"
+      number_digits_range: "musi mieć od %{min} do %{max} cyfr"
+      too_long:
+        one: "jest za długie (maksymalnie jeden znak)"
+        few: "jest za długie (maksymalnie %{count} znaki)"
+        many: "jest za długie (maksymalnie %{count} znaków)"
+        other: "jest za długie (maksymalnie %{count} znaków)"
+
+  helpers:
+    select:
+      prompt: "Proszę wybrać"
+
+  time:
+    formats:
+      result: "%d.%m.%Y, %H:%M"

@@ -1,0 +1,127 @@
+en:
+  layouts:
+    title: "Confirmation – Office of Electronic Communications"
+    description: "Verification of radio operator certificates issued by the Office of Electronic Communications"
+    skip_to_content: "Skip to content"
+    header:
+      logo_file: "confirmation_en.png"
+      logo_alt: "Confirmation – Office of Electronic Communications, home page"
+      menu: "Menu"
+      language:
+        label: "Language"
+        pl: "Polski"
+        en: "English"
+    footer:
+      brand: "Office of Electronic Communications"
+      brand_note: "Regulator of the telecommunications and postal market in Poland, EU"
+      contact: "Contact"
+      contact_mail: "ske.gdynia@uke.gov.pl"
+      links: "Links"
+      uke_url: "https://uke.gov.pl/en/"
+
+  categories:
+    maritime: "Maritime"
+    aeronautical: "Aeronautical"
+    amateur: "Amateur"
+
+  certificates:
+    new:
+      title: "Verify a certificate"
+      lead: "Enter the data from the certificate. The result comes directly from the certificate register kept by the Office."
+      qr_tip: "Do you have a confirmation with a QR code? Scan it with your phone – the form will be filled in automatically."
+      categories_label: "Certificate category"
+      result_label: "Search result"
+    form:
+      error_summary:
+        one: "Correct 1 field to continue"
+        other: "Correct %{count} fields to continue"
+      certificate_data: "1. Certificate data"
+      holder_data: "2. Holder data"
+      choose_division: "Choose the type of certificate"
+      number_hint:
+        maritime: "choose the type of certificate and enter the 5 digits of the number, e.g. 05998"
+        aeronautical: "choose the type of certificate and enter 2 to 5 digits of the number, e.g. 1234"
+        amateur: "choose the type of certificate and enter 2 to 5 digits of the number, e.g. 12345"
+      no_expiry: "Certificate without expiry date"
+      national_chars:
+        summary: "How to enter national characters (ą, ł, ü, č…)?"
+        body: "You can enter the name and given names with or without national characters – both are correct. If your keyboard lacks the letters you need (e.g. Czech or German), enter them without accents: Kozłowski → Kozlowski, Müller → Muller, Kateřina → Katerina."
+      required_note: "– required field"
+      clear: "Clear"
+      submit: "Verify certificate"
+    result:
+      division: "Type"
+      number: "Number"
+      date_of_issue: "Date of issue"
+      holder: "Holder"
+      birth_date: "Date of birth"
+      valid_until: "Valid till %{date}"
+      unlimited: "Without expiry date"
+      expired: "Expired %{date}"
+      download_pdf: "Download confirmation (PDF)"
+      as_of: "Register data as of %{time}."
+      found:
+        title: "Certificate confirmed"
+        subtitle: "Found in the certificate register"
+      not_found:
+        title: "Certificate not found"
+        subtitle: "The data entered does not match any entry in the register"
+        check: "Please check in particular:"
+        tips:
+          - "the type and number of the certificate,"
+          - "the dates – of issue, of expiry and of birth,"
+          - "the spelling of the name and all given names."
+        contact_html: "The data is correct and the result is still negative? Write to: %{mail}"
+      unavailable:
+        title: "Verification temporarily unavailable"
+        body: "We could not connect to the certificate register. Please try again in a few minutes."
+      too_many_requests:
+        title: "Too many attempts"
+        body: "Too many searches in a short time. Please wait a minute and try again."
+      invalid: "Complete the marked fields – the result will appear here."
+      how:
+        title: "How does it work?"
+        steps:
+          - "Choose the category and the type of certificate."
+          - "Enter the data exactly as on the certificate and click “Verify certificate”."
+          - "If the certificate is in the register, you will see its data."
+
+  statements:
+    create:
+      not_confirmed: "The confirmation cannot be generated: the certificate has not been confirmed in the register."
+      unavailable: "The confirmation cannot be generated: the certificate register is temporarily unavailable. Please try again in a few minutes."
+      too_many_requests: "Too many attempts in a short time. Please wait a minute and try again."
+
+  pages:
+    declaration:
+      title: "Accessibility declaration"
+
+  activemodel:
+    attributes:
+      certificate_search:
+        division_id: "Type of certificate"
+        number: "Certificate number"
+        date_of_issue: "Date of issue"
+        valid_thru: "Valid till"
+        no_expiry: "Certificate without expiry date"
+        name: "Name"
+        given_names: "Given names"
+        birth_date: "Birth date"
+    errors:
+      models:
+        certificate_search:
+          attributes:
+            division_id:
+              inclusion: "– choose from the list"
+            valid_thru:
+              blank: "can't be blank – if the certificate has no expiry date, tick “Certificate without expiry date”"
+
+  errors:
+    messages:
+      invalid_date: "is not a valid date"
+      number_exact_digits: "must have exactly %{min} digits"
+      number_digits_range: "must have from %{min} to %{max} digits"
+
+  time:
+    formats:
+      result: "%d.%m.%Y, %H:%M"

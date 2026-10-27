@@ -1,0 +1,121 @@
+# Rodzaje świadectw – dosłowna kopia tabeli `divisions` z NETPAR (stan na 2026-10-22).
+# Nazw nie zmieniamy ani nie tłumaczymy: puste english_name oznacza krajowy rodzaj bez odpowiednika EN
+# (wtedy w wersji EN pokazujemy nazwę polską). Kolejność jak w bazie (wg id).
+#
+# category: M – morskie, L – lotnicze, R – radioamatorskie
+
+- id: 1
+  category: L
+  number_prefix: "L-"
+  name: "świadectwo ogólne operatora radiotelefonisty"
+  english_name: "the radiotelephone operator's general certificate"
+- id: 2
+  category: L
+  number_prefix: "L-"
+  name: "świadectwo ograniczone operatora radiotelefonisty"
+  english_name: "the telephone operator's restricted certificate"
+- id: 3
+  category: L
+  number_prefix: "L-"
+  name: "świadectwo operatora radiotelegrafisty pierwszej klasy"
+  english_name: "the first-class radiotelegraph operator's certificate"
+- id: 4
+  category: L
+  number_prefix: "L-"
+  name: "świadectwo operatora radiotelegrafisty drugiej klasy"
+  english_name: "the second-class radiotelegraph operator's certificate"
+- id: 5
+  category: L
+  number_prefix: "L-"
+  name: "świadectwo ograniczone operatora radiotelefonisty - zakres 122.1-122.9 MHz"
+  english_name: "the radiotelephone operator's restricted certificate - 122.1-122.9 MHz band"
+- id: 6
+  category: L
+  number_prefix: "L-"
+  name: "świadectwo ograniczone operatora radiotelefonisty dla pilotów szybowcowych"
+  english_name: "the radiotelephone operator's restricted for glider pilots certificate"
+- id: 7
+  category: L
+  number_prefix: "L-"
+  name: "świadectwo operatora radiotelefonisty stacji lotniskowej"
+  english_name: "airport station radiotelephone operator's certificate"
+- id: 8
+  category: L
+  number_prefix: "L-"
+  name: "świadectwo specjalne ograniczone operatora radiotelefonisty dla pilotów szybowcowych"
+  english_name: "The radiotelephone operator's restricted special for glider pilots certificate"
+- id: 9
+  category: M
+  number_prefix: "G1E-"
+  name: "świadectwo radioelektronika pierwszej klasy GMDSS"
+  english_name: "First-class radio electronic certificate"
+- id: 10
+  category: M
+  number_prefix: "G2E-"
+  name: "świadectwo radioelektronika drugiej klasy GMDSS"
+  english_name: "Second-class radio electronic certificate"
+- id: 11
+  category: M
+  number_prefix: "GG-"
+  name: "świadectwo ogólne operatora GMDSS"
+  english_name: "General operator's certificate"
+- id: 12
+  category: M
+  number_prefix: "GR-"
+  name: "świadectwo ograniczone operatora GMDSS"
+  english_name: "Restricted operator's certificate"
+- id: 13
+  category: M
+  number_prefix: "GL-"
+  name: "świadectwo operatora łączności dalekiego zasięgu LRC"
+  english_name: "Long range operator's certificate"
+- id: 14
+  category: M
+  number_prefix: "GS-"
+  name: "świadectwo operatora łączności bliskiego zasięgu SRC"
+  english_name: "Short range operator's certificate"
+- id: 15
+  category: M
+  number_prefix: "MA-"
+  name: "świadectwo operatora radiotelefonisty VHF"
+  english_name: "VHF radiotelephone operator's certificate"
+- id: 16
+  category: M
+  number_prefix: "GC-"
+  name: "świadectwo operatora stacji nadbrzeżnej CSO"
+  english_name: ""
+- id: 17
+  category: M
+  number_prefix: "IW-"
+  name: "świadectwo operatora radiotelefonisty w służbie śródlądowej IWC"
+  english_name: ""
+- id: 18
+  category: R
+  number_prefix: "A-"
+  name: "świadectwo klasy A operatora urządzeń radiowych"
+  english_name: ""
+- id: 19
+  category: R
+  number_prefix: "B-"
+  name: "świadectwo klasy B operatora urządzeń radiowych"
+  english_name: ""
+- id: 20
+  category: R
+  number_prefix: "C-"
+  name: "świadectwo klasy C operatora urządzeń radiowych"
+  english_name: ""
+- id: 21
+  category: R
+  number_prefix: "D-"
+  name: "świadectwo klasy D operatora urządzeń radiowych"
+  english_name: ""
+- id: 22
+  category: R
+  number_prefix: "I-"
+  name: "zaświadczenie radiowe kategorii 1"
+  english_name: ""
+- id: 23
+  category: R
+  number_prefix: "III-"
+  name: "egzamin do zaświadczenia radiowego kategorii 3"
+  english_name: ""

@@ -1,0 +1,93 @@
+<%= form_with model: search, scope: :certificate_search, url: category_certificates_path(category), id: "search_form",
+              class: "search-form", data: { controller: "certificate-form" } do |f| %>
+
+  <% if search.errors.any? %>
+    <div class="error-summary" role="alert" tabindex="-1" data-certificate-form-target="errorSummary">
+      <p class="error-summary__title"><%= t(".error_summary", count: search.errors.attribute_names.size) %></p>
+      <ul>
+        <% search.errors.attribute_names.each do |attribute| %>
+          <% field_id = attribute == :division_id ? "certificate_search_division_id" : "certificate_search_#{attribute}" %>
+          <li><a href="#<%= field_id %>"><%= search.errors.full_messages_for(attribute).first %></a></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <fieldset class="form-section">
+    <legend><%= t(".certificate_data") %></legend>
+
+    <div class="field">
+      <%= f.label :number, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:number) %> <span class="required" aria-hidden="true">*</span><% end %>
+      <div class="number-group">
+        <%= f.select :division_id, division_options(category, search.division_id),
+                     { prompt: t(".choose_division") },
+                     class: "form-select number-group__division", required: true,
+                     aria: { label: CertificateSearch.human_attribute_name(:division_id), **field_aria(search, :division_id) },
+                     data: { certificate_form_target: "division", action: "certificate-form#updatePrefix" } %>
+        <span class="number-group__prefix" aria-hidden="true" data-certificate-form-target="prefix"><%= search.number_prefix || "–" %></span>
+        <%= f.text_field :number, class: "form-control number-group__digits", inputmode: "numeric", autocomplete: "off", required: true,
+                         aria: field_aria(search, :number, hint: true) %>
+      </div>
+      <%= field_error(search, :division_id) %>
+      <%= field_error(search, :number) %>
+      <span id="number_hint" class="field__hint"><%= t(".number_hint.#{category.slug}") %></span>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <%= f.label :date_of_issue, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:date_of_issue) %> <span class="required" aria-hidden="true">*</span><% end %>
+        <%= f.date_field :date_of_issue, class: "form-control", required: true, aria: field_aria(search, :date_of_issue) %>
+        <%= field_error(search, :date_of_issue) %>
+      </div>
+      <div class="field">
+        <%= f.label :valid_thru, CertificateSearch.human_attribute_name(:valid_thru), class: "field__label" %>
+        <%= f.date_field :valid_thru, class: "form-control", disabled: search.no_expiry, aria: field_aria(search, :valid_thru),
+                         data: { certificate_form_target: "validThru" } %>
+        <%= field_error(search, :valid_thru) %>
+      </div>
+      <div class="field field--checkbox">
+        <%= f.label :no_expiry, class: "checkbox" do %>
+          <%= f.check_box :no_expiry, data: { certificate_form_target: "noExpiry", action: "certificate-form#toggleExpiry" } %>
+          <%= t(".no_expiry") %>
+        <% end %>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="form-section">
+    <legend><%= t(".holder_data") %></legend>
+    <div class="field-row">
+      <div class="field">
+        <%= f.label :name, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:name) %> <span class="required" aria-hidden="true">*</span><% end %>
+        <%= f.text_field :name, class: "form-control", autocomplete: "off", required: true, maxlength: 100, aria: field_aria(search, :name) %>
+        <%= field_error(search, :name) %>
+      </div>
+      <div class="field">
+        <%= f.label :given_names, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:given_names) %> <span class="required" aria-hidden="true">*</span><% end %>
+        <%= f.text_field :given_names, class: "form-control", autocomplete: "off", required: true, maxlength: 100, aria: field_aria(search, :given_names) %>
+        <%= field_error(search, :given_names) %>
+      </div>
+      <div class="field">
+        <%= f.label :birth_date, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:birth_date) %> <span class="required" aria-hidden="true">*</span><% end %>
+        <%= f.date_field :birth_date, class: "form-control", required: true, aria: field_aria(search, :birth_date) %>
+        <%= field_error(search, :birth_date) %>
+      </div>
+    </div>
+
+    <details class="national-chars">
+      <summary><%= t(".national_chars.summary") %></summary>
+      <p><%= t(".national_chars.body") %></p>
+    </details>
+  </fieldset>
+
+  <div class="form-actions">
+    <span class="field__hint"><span class="required" aria-hidden="true">*</span> <%= t(".required_note") %></span>
+    <div class="form-actions__buttons">
+      <%= link_to t(".clear"), category_certificates_path(category), class: "btn btn-outline-primary btn-lg" %>
+      <button type="submit" class="btn btn-primary btn-lg">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <%= t(".submit") %>
+      </button>
+    </div>
+  </div>
+<% end %>

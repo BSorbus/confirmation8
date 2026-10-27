@@ -1,0 +1,4 @@
+<%= tag.aside id: "search_result", class: [ "result-column", ("has-result" if outcome.in?(%i[found not_found unavailable too_many_requests])) ],
+              aria: { live: "polite", label: t("certificates.new.result_label") } do %>
+  <%= render "certificates/result", outcome:, certificate:, search:, category: %>
+<% end %>

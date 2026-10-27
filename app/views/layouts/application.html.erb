@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <meta charset="utf-8">
+    <title><%= content_for(:title) || t("layouts.title") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= t("layouts.description") %>">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%= favicon_link_tag "favicon.ico" %>
+    <%= stylesheet_link_tag "bootstrap.min", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= render "layouts/matomo" if Rails.configuration.x.confirmation.dig(:matomo, :enabled) %>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#content"><%= t("layouts.skip_to_content") %></a>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <%= link_to root_path, class: "site-header__logo" do %>
+          <%= image_tag t("layouts.header.logo_file"), alt: t("layouts.header.logo_alt"), width: 440, height: 41 %>
+        <% end %>
+        <nav class="site-header__nav" aria-label="<%= t("layouts.header.menu") %>">
+          <%= link_to t("pages.declaration.title"), declaration_path %>
+          <div class="lang-switch" role="group" aria-label="<%= t("layouts.header.language.label") %>">
+            <%= other_locale_links %>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content" tabindex="-1">
+      <% if flash[:alert] %>
+        <div class="container-narrow"><div class="flash flash--alert" role="alert"><%= flash[:alert] %></div></div>
+      <% end %>
+      <%= yield %>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <div>
+          <p class="site-footer__brand"><%= t("layouts.footer.brand") %></p>
+          <p><%= t("layouts.footer.brand_note") %></p>
+        </div>
+        <div>
+          <p class="site-footer__heading"><%= t("layouts.footer.contact") %></p>
+          <p><%= mail_to t("layouts.footer.contact_mail") %></p>
+        </div>
+        <div>
+          <p class="site-footer__heading"><%= t("layouts.footer.links") %></p>
+          <ul>
+            <li><%= link_to t("pages.declaration.title"), declaration_path %></li>
+            <li><%= link_to "UKE", t("layouts.footer.uke_url") %></li>
+            <li><%= link_to "Facebook", "https://web.facebook.com/UrzadKomunikacjiElektronicznej" %></li>
+            <li><%= link_to "Twitter", "https://twitter.com/uke2uke" %></li>
+          </ul>
+          <p class="site-footer__copy">&copy; 2018 UKE</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

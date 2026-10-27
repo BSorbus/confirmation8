@@ -1,0 +1,2 @@
+<%= turbo_stream.replace "search_form", partial: "certificates/form", locals: { search: @search, category: @category } %>
+<%= turbo_stream.replace "search_result", partial: "certificates/result_column", locals: { outcome: @outcome, certificate: @certificate, search: @search, category: @category } %>
