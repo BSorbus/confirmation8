@@ -18,10 +18,15 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
 
   test "nagłówek: przycisk trybu jasny/ciemny, deklaracja dostępności tylko w stopce" do
     get "/pl/certificates/maritime"
-    assert_select "header button.theme-toggle[data-controller=theme][aria-pressed]", 1
+    assert_select "header .theme-switch[data-controller=theme] button.theme-switch__button[aria-pressed]", 3
+    %w[light dark contrast].each { |theme| assert_select "header button[data-theme-value=#{theme}]", 1 }
+    assert_select "header a.brand[aria-label^='Confirmation']", 1
+    assert_select "header .brand__org", text: /Urząd Komunikacji\s*Elektronicznej/
+    assert_select "header img", 0 # znak tekstowy zamiast obrazka
     assert_select "header a[href='/pl/declaration']", 0
     assert_select "footer a[href='/pl/declaration']", 1
-    assert_match 'setAttribute("data-bs-theme"', response.body # tryb ustawiany w <head>, bez mignięcia
+    assert_match 'setAttribute("data-theme"', response.body # tryb ustawiany w <head>, bez mignięcia
+    assert_match "prefers-contrast: more", response.body
   end
 
   test "przełącznik języka prowadzi do tej samej strony w drugim języku" do

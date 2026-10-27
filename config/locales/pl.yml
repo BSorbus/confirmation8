@@ -4,11 +4,16 @@ pl:
     description: "Weryfikacja świadectw operatorów urządzeń radiowych wydanych przez Urząd Komunikacji Elektronicznej"
     skip_to_content: "Przejdź do treści"
     header:
-      logo_file: "confirmation_pl.png"
+      organization:
+        - "Urząd Komunikacji"
+        - "Elektronicznej"
       logo_alt: "Confirmation – Urząd Komunikacji Elektronicznej, strona główna"
       menu: "Menu"
       theme:
+        label: "Wygląd strony"
+        light: "Tryb jasny"
         dark: "Tryb ciemny"
+        contrast: "Wysoki kontrast"
       language:
         label: "Język"
         pl: "Polski"

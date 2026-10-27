@@ -55,6 +55,8 @@
   --btn-primary: var(--uke-navy);
   --btn-primary-hover: var(--uke-navy-dark);
   --shadow: 0 1px 3px rgba(16, 38, 92, .12), 0 8px 24px rgba(16, 38, 92, .06);
+  --brand-c: #204080;      /* kolory znaku „CONFIRMATION” (jak w dawnym logo) */
+  --brand-text: #404040;
 
   --bs-body-font-family: "Titillium Web", "Segoe UI", Arial, sans-serif;
   --bs-body-font-size: 1rem;
@@ -96,6 +98,8 @@
   --warn: #F2B45A;
   --warn-bg: #3A2A0C;
   --shadow: 0 1px 3px rgba(0, 0, 0, .5);
+  --brand-c: #9DB8FF;
+  --brand-text: #D1D5DB;
   --bs-link-color-rgb: 157, 184, 255;
   --bs-link-hover-color: #C3D3FF;
   --bs-link-hover-color-rgb: 195, 211, 255;
@@ -135,32 +139,36 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .form-control:disabled { background: var(--surface-disabled); color: var(--ink-disabled); }
 
 /* Nagłówek */
-/* Nagłówek z logo zostaje jasny także w trybie ciemnym (logo ma szary i granatowy tekst). */
-.site-header {
-  background: #FFFFFF; border-bottom: 4px solid var(--uke-lime); color-scheme: light;
-  --accent: var(--uke-navy); --surface: #FFFFFF; --ink: #1F2937;
-}
+.site-header { background: var(--surface); border-bottom: 4px solid var(--uke-lime); }
 .site-header__inner {
   max-width: 1160px; margin: 0 auto; padding: 18px 24px;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;
 }
-.site-header__logo img { display: block; width: 100%; max-width: 440px; height: auto; }
+/* Znak „CONFIRMATION | Urząd Komunikacji Elektronicznej” – tekst zamiast obrazka (kolory z trybu jasny/ciemny). */
+.brand { display: inline-flex; align-items: center; gap: 0.5em; text-decoration: none; font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.45rem); line-height: 1; }
+.brand:hover { text-decoration: none; }
+.brand__name { font-weight: 400; letter-spacing: 0.01em; color: var(--uke-lime); }
+.brand__c { color: var(--brand-c); }
+.brand__divider { align-self: stretch; width: 1px; margin: 0.1em 0; background: var(--brand-text); }
+.brand__org { font-weight: 400; font-size: max(0.39em, 0.75rem); line-height: 1.15; color: var(--brand-text); }
 .site-header__nav { display: flex; align-items: center; gap: 20px; }
-.lang-switch { display: flex; border: 1px solid var(--uke-navy); border-radius: 6px; overflow: hidden; }
+.lang-switch { display: flex; border: 1px solid var(--accent); border-radius: 6px; overflow: hidden; }
 .lang-switch__link {
   min-width: 48px; min-height: 44px; display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 0.875rem; text-decoration: none; color: var(--accent); background: #FFFFFF;
+  font-weight: 700; font-size: 0.875rem; text-decoration: none; color: var(--accent); background: var(--surface);
 }
-.lang-switch__link.is-current { background: var(--uke-navy); color: #FFFFFF; }
-.theme-toggle {
-  display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; padding: 0 12px;
-  border: 1px solid var(--accent); border-radius: 6px; background: var(--surface); color: var(--accent);
-  font-weight: 700; font-size: 0.875rem; cursor: pointer;
+.lang-switch__link.is-current { background: var(--btn-primary); color: #FFFFFF; }
+/* Wygląd strony: jasny / ciemny / wysoki kontrast – trzy przyciski jak przełącznik języka. */
+.theme-switch { display: flex; border: 1px solid var(--accent); border-radius: 6px; overflow: hidden; }
+.theme-switch__button {
+  display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0;
+  border: 0; background: var(--surface); color: var(--accent); cursor: pointer;
 }
-.theme-toggle:hover { background: var(--accent); color: #FFFFFF; }
-.theme-toggle__icon--sun { display: none; }
-:root[data-bs-theme="dark"] .theme-toggle__icon--sun { display: inline; }
-:root[data-bs-theme="dark"] .theme-toggle__icon--moon { display: none; }
+.theme-switch__button:hover { background: var(--surface-accent); }
+/* Aktywny tryb podświetlony od razu z atrybutu ustawionego w <head> (bez czekania na JavaScript). */
+:root[data-theme="light"] .theme-switch__button[data-theme-value="light"],
+:root[data-theme="dark"] .theme-switch__button[data-theme-value="dark"],
+:root[data-theme="contrast"] .theme-switch__button[data-theme-value="contrast"] { background: var(--btn-primary); color: #FFFFFF; }
 
 /* Pasek tytułowy */
 .hero { background: var(--uke-navy); color: #FFFFFF; }
@@ -305,3 +313,44 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .form-actions__buttons { width: 100%; }
   .form-actions__buttons .btn { flex: 1 1 auto; }
 }
+
+/* ------------------------------------------------------------------------------------------------
+   Tryb wysokiego kontrastu (data-theme="contrast"): żółty i biały tekst na czarnym tle,
+   białe obramowania, podkreślone linki, wyraźny fokus. Bootstrap działa wtedy w trybie ciemnym.
+   ------------------------------------------------------------------------------------------------ */
+:root[data-theme="contrast"] {
+  --ink: #FFFFFF; --ink-muted: #FFFFFF; --ink-soft: #FFFFFF; --ink-disabled: #BFBFBF;
+  --ground: #000000; --surface: #000000; --surface-muted: #000000; --surface-accent: #1A1A1A; --surface-disabled: #000000;
+  --line: #FFFFFF; --divider: #FFFFFF; --field-border: #FFFFFF;
+  --accent: #FFFF00; --btn-primary: #FFFF00; --btn-primary-hover: #FFFFFF;
+  --ok: #7CFF7C; --ok-dark: #7CFF7C; --ok-bg: #000000; --ok-solid: #000000;
+  --bad: #FF8080; --bad-dark: #FF8080; --bad-bg: #000000; --bad-solid: #000000;
+  --warn: #FFFF00; --warn-bg: #000000;
+  --focus: #00FFFF;
+  --shadow: none;
+  --brand-c: #FFFFFF; --brand-text: #FFFFFF;
+  --bs-link-color-rgb: 255, 255, 0; --bs-link-hover-color: #FFFFFF; --bs-link-hover-color-rgb: 255, 255, 255;
+}
+:root[data-theme="contrast"] a { text-decoration: underline; }
+:root[data-theme="contrast"] :is(a, button, input, select, summary, [tabindex="-1"]):focus-visible { outline-width: 4px; }
+:root[data-theme="contrast"] .brand { text-decoration: none; }
+:root[data-theme="contrast"] .brand__name { color: #FFFF00; }
+:root[data-theme="contrast"] .btn-primary { --bs-btn-color: #000000; --bs-btn-hover-color: #000000; --bs-btn-active-color: #000000; }
+:root[data-theme="contrast"] .btn-outline-primary { --bs-btn-hover-color: #000000; }
+:root[data-theme="contrast"] :is(.lang-switch__link.is-current, .theme-switch__button[data-theme-value="contrast"]) { color: #000000; }
+:root[data-theme="contrast"] :is(.search-card, .result-card, .info-card, .content-page, .national-chars) { border: 2px solid #FFFFFF; }
+:root[data-theme="contrast"] .result-card--found { border-color: var(--ok); }
+:root[data-theme="contrast"] .result-card--not-found { border-color: var(--bad); }
+:root[data-theme="contrast"] .result-card--warning { border-color: var(--warn); }
+:root[data-theme="contrast"] .validity { border: 2px solid currentColor; }
+:root[data-theme="contrast"] .validity--valid { color: var(--ok); }
+:root[data-theme="contrast"] .validity--expired { color: var(--bad); }
+:root[data-theme="contrast"] .validity--unlimited { color: #FFFF00; background: #000000; }
+:root[data-theme="contrast"] :is(.hero, .site-footer) { background: #000000; color: #FFFFFF; }
+:root[data-theme="contrast"] .hero { border-bottom: 2px solid #FFFFFF; }
+:root[data-theme="contrast"] :is(.hero__lead, .site-footer__brand, .site-footer__heading) { color: #FFFFFF; }
+:root[data-theme="contrast"] :is(.hero__qr, .site-footer a) { color: #FFFF00; }
+:root[data-theme="contrast"] .category-tabs__tab { color: #FFFFFF; }
+:root[data-theme="contrast"] .category-tabs__tab.is-current { color: #FFFF00; }
+:root[data-theme="contrast"] .form-control, :root[data-theme="contrast"] .form-select { background-color: #000000; color: #FFFFFF; }
+:root[data-theme="contrast"] .required { color: #FFFF00; }

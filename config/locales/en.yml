@@ -4,11 +4,16 @@ en:
     description: "Verification of radio operator certificates issued by the Office of Electronic Communications"
     skip_to_content: "Skip to content"
     header:
-      logo_file: "confirmation_en.png"
+      organization:
+        - "Office of Electronic"
+        - "Communications"
       logo_alt: "Confirmation – Office of Electronic Communications, home page"
       menu: "Menu"
       theme:
+        label: "Page appearance"
+        light: "Light mode"
         dark: "Dark mode"
+        contrast: "High contrast"
       language:
         label: "Language"
         pl: "Polski"
