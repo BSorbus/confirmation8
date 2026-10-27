@@ -42,7 +42,7 @@ Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). 
 
 `config/deploy.rb` (adresy serwerów) i `config/deploy/<serwer>/` (credentials przygotowane dla danego serwera)
 są tylko lokalnie – w `.gitignore`. Opis zadań na początku `config/deploy.rb`; podgląd poleceń bez wykonywania:
-`bundle exec mina test2 deploy --simulate`.
+`bundle exec mina confirmation8-test deploy --simulate`.
 
 Każdy serwer ma własną kopię credentials w `shared/config/credentials/` (pierwszeństwo przed wersją z git).
 Zmiana na serwerze: `cd /webapps/confirmation8/current && EDITOR=nano bin/credentials-edit production`,
