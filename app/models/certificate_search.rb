@@ -16,14 +16,18 @@ class CertificateSearch
   attribute :given_names, :string
   attribute :birth_date, :string
 
+  # Kolejność pól w formularzu – w tej kolejności pokazujemy błędy w podsumowaniu.
+  FORM_ORDER = %i[division_id number date_of_issue valid_thru no_expiry name given_names birth_date].freeze
+
   validates :category, presence: true
   validates :division_id, inclusion: { in: ->(search) { search.category&.divisions&.map(&:id) || [] } }
   validates :number, presence: true
   validate :number_format
-  validates :date_of_issue, :birth_date, presence: true
+  validates :date_of_issue, presence: true
   validates :valid_thru, presence: true, unless: :no_expiry
-  validate :dates_format
   validates :name, :given_names, presence: true, length: { maximum: 100 }
+  validates :birth_date, presence: true
+  validate :dates_format
 
   before_validation :normalize
 
@@ -38,6 +42,11 @@ class CertificateSearch
   end
 
   def category = Category.find(category_slug)
+
+  # Pola z błędami w kolejności formularza (do podsumowania błędów).
+  def error_attributes_in_form_order
+    errors.attribute_names.sort_by { FORM_ORDER.index(it) || FORM_ORDER.size }
+  end
 
   def division = Division.find(division_id)
 

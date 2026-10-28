@@ -5,7 +5,7 @@
     <div class="error-summary" role="alert" tabindex="-1" data-certificate-form-target="errorSummary">
       <p class="error-summary__title"><%= t(".error_summary", count: search.errors.attribute_names.size) %></p>
       <ul>
-        <% search.errors.attribute_names.each do |attribute| %>
+        <% search.error_attributes_in_form_order.each do |attribute| %>
           <% field_id = attribute == :division_id ? "certificate_search_division_id" : "certificate_search_#{attribute}" %>
           <li><a href="#<%= field_id %>"><%= search.errors.full_messages_for(attribute).first %></a></li>
         <% end %>

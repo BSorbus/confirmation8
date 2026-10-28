@@ -49,6 +49,25 @@ class CertificateSearchTest < ActiveSupport::TestCase
     assert_equal "05998", record.number
   end
 
+  test "błędy w kolejności pól formularza" do
+    record = CertificateSearch.new(category_slug: "maritime", date_of_issue: "2018-13-45")
+    record.validate
+    assert_equal %i[division_id number date_of_issue valid_thru name given_names birth_date], record.error_attributes_in_form_order
+  end
+
+  test "komunikaty po polsku pasują do każdego pola (bez odmiany „puste/pusty/pusta”)" do
+    I18n.with_locale(:pl) do
+      record = CertificateSearch.new(category_slug: "maritime", division_id: 11, no_expiry: "1")
+      record.validate
+      assert_equal "Numer świadectwa – to pole jest wymagane", record.errors.full_messages_for(:number).first
+      assert_equal "Data wydania – to pole jest wymagane", record.errors.full_messages_for(:date_of_issue).first
+      assert_equal "Imiona – to pole jest wymagane", record.errors.full_messages_for(:given_names).first
+      record.name = "x" * 101
+      record.validate
+      assert_equal "Nazwisko – maksymalnie 100 znaków", record.errors.full_messages_for(:name).first
+    end
+  end
+
   test "parametry dla NETPAR" do
     assert_equal({ number_prefix: "GG-", number: "05998", date_of_issue: "2018-08-30", valid_thru: "2028-08-30",
                    name: "kozlowski", given_names: "JAN MARIA", birth_date: "1969-07-06" }, search.tap(&:valid?).to_netpar_params)

@@ -123,21 +123,23 @@ pl:
             division_id:
               inclusion: "– wybierz z listy"
             valid_thru:
-              blank: "nie może być puste – jeśli świadectwo nie ma daty ważności, zaznacz „Świadectwo bezterminowe”"
+              blank: "– to pole jest wymagane; jeśli świadectwo nie ma daty ważności, zaznacz „Świadectwo bezterminowe”"
 
   errors:
     format: "%{attribute} %{message}"
     messages:
-      blank: "nie może być puste"
+      blank: "– to pole jest wymagane"
       inclusion: "nie znajduje się na liście dopuszczalnych wartości"
       invalid_date: "nie jest poprawną datą"
       number_exact_digits: "musi mieć dokładnie %{min} cyfr"
       number_digits_range: "musi mieć od %{min} do %{max} cyfr"
+      # Komunikaty neutralne gramatycznie – pasują do nazw pól w każdym rodzaju i liczbie
+      # („Numer…”, „Data…”, „Imiona…”).
       too_long:
-        one: "jest za długie (maksymalnie jeden znak)"
-        few: "jest za długie (maksymalnie %{count} znaki)"
-        many: "jest za długie (maksymalnie %{count} znaków)"
-        other: "jest za długie (maksymalnie %{count} znaków)"
+        one: "– maksymalnie %{count} znak"
+        few: "– maksymalnie %{count} znaki"
+        many: "– maksymalnie %{count} znaków"
+        other: "– maksymalnie %{count} znaków"
 
   helpers:
     select:
