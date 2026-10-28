@@ -68,23 +68,25 @@
 
     <footer class="site-footer">
       <div class="site-footer__inner">
-        <div>
+        <div class="site-footer__section">
           <p class="site-footer__brand"><%= t("layouts.footer.brand") %></p>
           <p><%= t("layouts.footer.brand_note") %></p>
         </div>
-        <div>
+        <div class="site-footer__section">
           <p class="site-footer__heading"><%= t("layouts.footer.contact") %></p>
-          <p><%= mail_to t("layouts.footer.contact_mail") %></p>
-        </div>
-        <div>
-          <p class="site-footer__heading"><%= t("layouts.footer.links") %></p>
-          <ul>
-            <li><%= link_to t("pages.declaration.title"), declaration_path %></li>
-            <li><%= link_to "UKE", t("layouts.footer.uke_url") %></li>
-            <li><%= link_to "Facebook", "https://web.facebook.com/UrzadKomunikacjiElektronicznej" %></li>
+          <ul class="site-footer__links">
+            <li><%= mail_to t("layouts.footer.contact_mail") do %><svg class="site-footer__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><%= t("layouts.footer.contact_mail") %><% end %></li>
           </ul>
-          <p class="site-footer__copy">&copy; 2018–<%= Date.current.year %> UKE</p>
         </div>
+        <div class="site-footer__section">
+          <p class="site-footer__heading"><%= t("layouts.footer.links") %></p>
+          <ul class="site-footer__links">
+            <li><%= link_to declaration_path do %><svg class="site-footer__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><%= t("pages.declaration.title") %><% end %></li>
+            <li><%= link_to t("layouts.footer.uke_url") do %><svg class="site-footer__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>UKE<% end %></li>
+            <li><%= link_to "https://web.facebook.com/UrzadKomunikacjiElektronicznej" do %><svg class="site-footer__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Facebook<% end %></li>
+          </ul>
+        </div>
+        <p class="site-footer__copy">&copy; 2018–<%= Date.current.year %> UKE</p>
       </div>
     </footer>
   </body>
