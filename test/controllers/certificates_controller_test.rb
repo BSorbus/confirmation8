@@ -52,6 +52,13 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/evil/, link)
   end
 
+  test "formularz bez walidacji przeglądarki (komunikaty w języku strony), pola nadal oznaczone jako wymagane" do
+    get "/pl/certificates/maritime"
+    assert_select "form#search_form[novalidate]"
+    assert_select "form#search_form select#certificate_search_division_id[required]"
+    assert_select "form#search_form input#certificate_search_number[required]"
+  end
+
   test "lista rodzajów: nazwy z NETPAR, prefiks w atrybucie" do
     get "/pl/certificates/maritime"
     assert_select "select#certificate_search_division_id option[value='14'][data-prefix='GS-']", "świadectwo operatora łączności bliskiego zasięgu SRC"

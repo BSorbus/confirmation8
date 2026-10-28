@@ -1,5 +1,7 @@
+<%# novalidate: bez dymków walidacji przeglądarki (w jej języku, tylko dla pierwszego pola) – błędy pokazuje serwer:
+    podsumowanie i komunikaty przy polach w języku strony. Atrybuty required zostają dla czytników ekranu. %>
 <%= form_with model: search, scope: :certificate_search, url: category_certificates_path(category), id: "search_form",
-              class: "search-form", data: { controller: "certificate-form" } do |f| %>
+              class: "search-form", html: { novalidate: true }, data: { controller: "certificate-form" } do |f| %>
 
   <% if search.errors.any? %>
     <div class="error-summary" role="alert" tabindex="-1" data-certificate-form-target="errorSummary">
