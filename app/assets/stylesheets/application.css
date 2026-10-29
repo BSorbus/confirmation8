@@ -135,8 +135,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   --bs-btn-hover-color: #FFFFFF; --bs-btn-hover-bg: var(--btn-primary); --bs-btn-hover-border-color: var(--btn-primary);
   --bs-btn-active-bg: var(--uke-navy-dark); --bs-btn-active-border-color: var(--uke-navy-dark);
 }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; min-height: 48px; }
-.form-control, .form-select { min-height: 46px; border-color: var(--field-border); font-size: 1rem; }
+/* Rozmiar przycisków: klasy Bootstrapa (btn, btn-sm, btn-lg); tu tylko ikona obok tekstu. */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; }
+/* Rozmiar pól: klasy Bootstrapa form-control-sm / form-select-sm w formularzu. */
+.form-control, .form-select { border-color: var(--field-border); }
 .form-control[aria-invalid="true"], .form-select[aria-invalid="true"] { border: 2px solid var(--bad); }
 .form-control:disabled { background: var(--surface-disabled); color: var(--ink-disabled); }
 
@@ -182,7 +184,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* Układ: formularz + wynik */
 .page-grid {
   max-width: 1160px; margin: -24px auto 0; padding: 0 24px 48px;
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 24px; align-items: start;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); gap: 24px; align-items: start;
 }
 .search-card, .result-card, .info-card {
   background: var(--surface); border-radius: 10px;
@@ -211,17 +213,17 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .required { color: var(--bad); }
 .field-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
 .field--checkbox { align-self: end; }
-.checkbox { display: flex; align-items: center; gap: 10px; min-height: 46px; cursor: pointer; font-size: 0.95rem; }
-.checkbox input { width: 22px; height: 22px; flex: none; accent-color: var(--accent); }
+.checkbox { display: flex; align-items: center; gap: 10px; min-height: 31px; cursor: pointer; font-size: 0.875rem; }
+.checkbox input { width: 20px; height: 20px; flex: none; accent-color: var(--accent); }
 
 /* Numer świadectwa: rodzaj (lista) + prefiks + cyfry */
 .number-group { display: flex; }
 .number-group__division { flex: 1 1 auto; min-width: 0; border-radius: 6px 0 0 6px; border-right: 0; }
 .number-group__prefix {
-  display: flex; align-items: center; padding: 0 12px; min-height: 46px;
+  display: flex; align-items: center; padding: 0 8px; min-height: 31px; font-size: 0.875rem;
   background: var(--surface-accent); border: 1px solid var(--field-border); border-right: 0; font-weight: 700; color: var(--accent);
 }
-.number-group__digits { flex: 0 0 11em; width: auto; min-width: 0; border-radius: 0 6px 6px 0; }
+.number-group__digits { flex: 0 0 5.5em; width: auto; min-width: 0; border-radius: 0 6px 6px 0; }
 
 .national-chars { background: var(--surface-muted); border-radius: 6px; padding: 10px 14px; font-size: 0.95rem; }
 .national-chars summary { cursor: pointer; color: var(--accent); font-weight: 600; }
@@ -298,6 +300,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* Copyright w osobnym wierszu, wyrównany do prawej (jak w poprzedniej wersji). */
 .site-footer__copy { grid-column: 1 / -1; margin: 8px 0 0 !important; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, .2); text-align: right; font-size: 0.8125rem; }
 
+/* Mniejsze laptopy – węższa kolumna z wynikiem, żeby lista rodzajów zmieściła długie nazwy */
+@media (max-width: 1199.98px) {
+  .page-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 300px); }
+}
 /* Tablet i telefon */
 @media (max-width: 991.98px) {
   .page-grid { grid-template-columns: minmax(0, 1fr); }

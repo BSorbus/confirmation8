@@ -132,7 +132,7 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_match "Popraw 2 pola", response.body
     assert_match "Numer świadectwa musi mieć dokładnie 5 cyfr", response.body
     assert_match 'aria-invalid="true"', response.body
-    assert_not_requested :get, /netpar\.test/
+    assert_not_requested :get, %r{certificates/search} # niepoprawne dane nie trafiają do wyszukiwania w NETPAR
   end
 
   test "NETPAR niedostępny" do
@@ -145,10 +145,49 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_match "Weryfikacja chwilowo niedostępna", response.body
   end
 
+  test "NETPAR niedostępny już przy formularzu: komunikat zamiast listy rodzajów" do
+    stub_request(:get, "#{NETPAR_URL}/token").to_timeout
+
+    get "/pl/certificates/maritime"
+
+    assert_response :service_unavailable
+    assert_match "Weryfikacja chwilowo niedostępna", response.body
+    assert_select "select#certificate_search_division_id option[data-prefix]", count: 0
+  end
+
+  test "rodzaje pobierane z NETPAR przy każdym wyświetleniu formularza" do
+    2.times { get "/pl/certificates/maritime" }
+
+    assert_requested :get, "#{NETPAR_URL}/divisions", times: 2
+  end
+
+  test "zakładki tylko dla kategorii włączonych w konfiguracji confirmation8" do
+    settings = Rails.configuration.x.confirmation
+    previous, settings[:categories] = settings[:categories], %w[M R]
+
+    get "/pl"
+    assert_select ".category-tabs__tab", count: 2
+    assert_select ".category-tabs__tab[href='/pl/certificates/aeronautical']", count: 0
+
+    get "/pl/certificates/aeronautical"
+    assert_response :not_found
+  ensure
+    settings[:categories] = previous
+  end
+
+  test "kategoria bez rodzajów włączonych w NETPAR: zakładka widoczna, pusta lista rodzajów" do
+    stub_netpar_divisions(NETPAR_DIVISIONS.select { it["category"] == "M" })
+
+    get "/pl/certificates/aeronautical"
+
+    assert_response :success
+    assert_select ".category-tabs__tab", count: 3
+    assert_select "select#certificate_search_division_id option[data-prefix]", count: 0
+  end
+
   test "PDF tylko dla kategorii morskiej (zatwierdzona treść)" do
     stub_netpar_token
-    stub_netpar_search(path: "certificates/search_by_multi_params",
-                       body: { certificates: [ netpar_certificate("number" => "L-1234", "category" => "L") ] })
+    stub_netpar_search(body: { certificates: [ netpar_certificate("number" => "L-1234", "category" => "L") ] })
 
     search!(category: "aeronautical", params: valid_search_params(division_id: 1, number: "1234"))
 

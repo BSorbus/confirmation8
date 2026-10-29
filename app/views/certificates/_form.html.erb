@@ -23,11 +23,11 @@
       <div class="number-group">
         <%= f.select :division_id, division_options(category, search.division_id),
                      { prompt: t(".choose_division") },
-                     class: "form-select number-group__division", required: true,
+                     class: "form-select form-select-sm number-group__division", required: true,
                      aria: { label: CertificateSearch.human_attribute_name(:division_id), **field_aria(search, :division_id) },
                      data: { certificate_form_target: "division", action: "certificate-form#updatePrefix" } %>
         <span class="number-group__prefix" aria-hidden="true" data-certificate-form-target="prefix"><%= search.number_prefix || "–" %></span>
-        <%= f.text_field :number, class: "form-control number-group__digits", inputmode: "numeric", autocomplete: "off", required: true,
+        <%= f.text_field :number, class: "form-control form-control-sm number-group__digits", inputmode: "numeric", autocomplete: "off", required: true,
                          aria: field_aria(search, :number, hint: true) %>
       </div>
       <%= field_error(search, :division_id) %>
@@ -38,12 +38,12 @@
     <div class="field-row">
       <div class="field">
         <%= f.label :date_of_issue, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:date_of_issue) %> <span class="required" aria-hidden="true">*</span><% end %>
-        <%= f.date_field :date_of_issue, class: "form-control", required: true, aria: field_aria(search, :date_of_issue) %>
+        <%= f.date_field :date_of_issue, class: "form-control form-control-sm", required: true, aria: field_aria(search, :date_of_issue) %>
         <%= field_error(search, :date_of_issue) %>
       </div>
       <div class="field">
         <%= f.label :valid_thru, CertificateSearch.human_attribute_name(:valid_thru), class: "field__label" %>
-        <%= f.date_field :valid_thru, class: "form-control", disabled: search.no_expiry, aria: field_aria(search, :valid_thru),
+        <%= f.date_field :valid_thru, class: "form-control form-control-sm", disabled: search.no_expiry, aria: field_aria(search, :valid_thru),
                          data: { certificate_form_target: "validThru" } %>
         <%= field_error(search, :valid_thru) %>
       </div>
@@ -61,17 +61,17 @@
     <div class="field-row">
       <div class="field">
         <%= f.label :name, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:name) %> <span class="required" aria-hidden="true">*</span><% end %>
-        <%= f.text_field :name, class: "form-control", autocomplete: "off", required: true, maxlength: 100, aria: field_aria(search, :name) %>
+        <%= f.text_field :name, class: "form-control form-control-sm", autocomplete: "off", required: true, maxlength: 100, aria: field_aria(search, :name) %>
         <%= field_error(search, :name) %>
       </div>
       <div class="field">
         <%= f.label :given_names, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:given_names) %> <span class="required" aria-hidden="true">*</span><% end %>
-        <%= f.text_field :given_names, class: "form-control", autocomplete: "off", required: true, maxlength: 100, aria: field_aria(search, :given_names) %>
+        <%= f.text_field :given_names, class: "form-control form-control-sm", autocomplete: "off", required: true, maxlength: 100, aria: field_aria(search, :given_names) %>
         <%= field_error(search, :given_names) %>
       </div>
       <div class="field">
         <%= f.label :birth_date, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:birth_date) %> <span class="required" aria-hidden="true">*</span><% end %>
-        <%= f.date_field :birth_date, class: "form-control", required: true, aria: field_aria(search, :birth_date) %>
+        <%= f.date_field :birth_date, class: "form-control form-control-sm", required: true, aria: field_aria(search, :birth_date) %>
         <%= field_error(search, :birth_date) %>
       </div>
     </div>
@@ -85,8 +85,8 @@
   <div class="form-actions">
     <span class="field__hint"><span class="required" aria-hidden="true">*</span> <%= t(".required_note") %></span>
     <div class="form-actions__buttons">
-      <%= link_to t(".clear"), category_certificates_path(category), class: "btn btn-outline-primary btn-lg" %>
-      <button type="submit" class="btn btn-primary btn-lg">
+      <%= link_to t(".clear"), category_certificates_path(category), class: "btn btn-outline-primary" %>
+      <button type="submit" class="btn btn-primary">
         <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <%= t(".submit") %>
       </button>

@@ -7,7 +7,7 @@ class StatementsController < ApplicationController
 
   def create
     search = build_search
-    certificate = search.valid? && @category.statement? && netpar.find_certificate(search, remote_ip: request.remote_ip)
+    certificate = @category.statement? && @category.enabled? && search.valid? && netpar.find_certificate(search, remote_ip: request.remote_ip)
     return redirect_back_to_form(t(".not_confirmed")) unless certificate
 
     pdf = PdfStatement.new(certificate, search_url: Rails.configuration.x.confirmation[:search_url])

@@ -5,8 +5,10 @@ require "webmock/minitest"
 
 module NetparStubs
   NETPAR_URL = "https://netpar.test/api/v1"
+  # Rodzaje świadectw (nazwy jak w produkcyjnym NETPAR, stan na 2026-10-27) – w testach wszystkie włączone do weryfikacji.
+  NETPAR_DIVISIONS = JSON.parse(File.read(File.expand_path("fixtures/files/netpar_divisions.json", __dir__))).freeze
 
-  # Odpowiedź w formacie API NETPAR (certificates_controller#mor_search_by_multi_params). Dane fikcyjne.
+  # Odpowiedź w formacie API NETPAR (api/v1/confirmation/certificates#search). Dane fikcyjne.
   def netpar_certificate(overrides = {})
     {
       "id" => 81115, "number" => "GG-05998", "date_of_issue" => "2018-08-30", "valid_thru" => "2028-08-30", "category" => "M",
@@ -20,7 +22,12 @@ module NetparStubs
     stub_request(:get, "#{NETPAR_URL}/token").to_return(status: 200, body: { token: }.to_json, headers: json_headers)
   end
 
-  def stub_netpar_search(status: 200, body: nil, path: "certificates/mor_search_by_multi_params")
+  def stub_netpar_divisions(rows = NETPAR_DIVISIONS)
+    stub_request(:get, "#{NETPAR_URL}/divisions").with(body: { enabled_in_confirmation: true })
+      .to_return(status: 200, body: { divisions: rows, meta: { total_count: rows.size } }.to_json, headers: json_headers)
+  end
+
+  def stub_netpar_search(status: 200, body: nil, path: "confirmation/certificates/search")
     body ||= status == 200 ? { "certificates" => [ netpar_certificate ], "meta" => {} } : { "error" => "Brak danych / No data" }
     stub_request(:get, "#{NETPAR_URL}/#{path}").to_return(status:, body: body.is_a?(String) ? body : body.to_json, headers: json_headers)
   end
@@ -43,6 +50,8 @@ module ActiveSupport
     setup do
       Rails.cache.clear
       WebMock.disable_net_connect!
+      stub_netpar_token
+      stub_netpar_divisions
     end
   end
 end

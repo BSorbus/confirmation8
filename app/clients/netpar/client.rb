@@ -1,26 +1,22 @@
 require "net/http"
 
 module Netpar
-  # Usługa NETPAR nie odpowiedziała poprawnie (brak połączenia, błąd serwera, nieoczekiwana odpowiedź).
-  class Unavailable < StandardError; end
-
   # Klient API NETPAR do weryfikacji świadectw.
   #
-  # Kontrakt API (nie zmieniamy go – jest po stronie NETPAR):
-  #   GET  /token                                         Basic Auth → {"token": "…"}
-  #   GET  /certificates/mor_search_by_multi_params       świadectwa morskie (M)
-  #   GET  /certificates/search_by_multi_params           pozostałe kategorie (L, R), parametr "category"
-  # Zapytania wyszukiwania to GET z treścią JSON, nagłówki "Authorization: Token token=…" i "X-Real-IP".
-  # Odpowiedzi: 200 {"certificates": […]} – znaleziono, 404 {"error": …} – brak danych,
-  # 406 {"error": …} – niekompletne dane.
+  # Kontrakt API (po stronie NETPAR):
+  #   GET  /token                                      Basic Auth → {"token": "…"}
+  #   GET  /divisions  {"enabled_in_confirmation": true}
+  #        rodzaje włączone do weryfikacji (divisions.enabled_in_confirmation), wszystkie kategorie
+  #        → 200 {"divisions": […], "meta": {"total_count": n}}
+  #   GET  /confirmation/certificates/search           weryfikacja świadectwa (L, M, R), parametr "category";
+  #        NETPAR szuka tylko świadectw rodzajów z enabled_in_confirmation
+  #        → 200 {"certificates": […]} – znaleziono, 404 {"error": …} – brak danych, 406 {"error": …} – niekompletne dane
+  # Zapytania to GET z treścią JSON, nagłówki "Authorization: Token token=…" i "X-Real-IP".
   class Client
     TOKEN_CACHE_KEY = "netpar/token"
     TOKEN_TTL = 9.minutes
-    SEARCH_PATHS = {
-      "M" => "certificates/mor_search_by_multi_params",
-      "L" => "certificates/search_by_multi_params",
-      "R" => "certificates/search_by_multi_params"
-    }.freeze
+    SEARCH_PATH = "confirmation/certificates/search"
+    DIVISION_KEYS = %w[id category number_prefix name english_name].freeze
 
     def initialize(config: Rails.configuration.x.confirmation[:netpar], cache: Rails.cache, password: config[:password])
       @base_url = config.fetch(:url).chomp("/")
@@ -33,11 +29,8 @@ module Netpar
 
     # Zwraca Certificate albo nil, gdy NETPAR nie potwierdza świadectwa.
     def find_certificate(search, remote_ip:)
-      code = search.category.code
-      body = search.to_netpar_params
-      body = body.merge(category: code) unless code == "M"
-
-      response = with_token { |token| get(SEARCH_PATHS.fetch(code), token:, body:, remote_ip:) }
+      body = search.to_netpar_params.merge(category: search.category.code)
+      response = with_token { |token| get(SEARCH_PATH, token:, body:, remote_ip:) }
 
       case response
       when Net::HTTPOK
@@ -51,6 +44,17 @@ module Netpar
       end
     rescue KeyError, Date::Error => e
       raise Unavailable, "NETPAR: niepoprawne dane w odpowiedzi (#{e.class})"
+    end
+
+    # Rodzaje świadectw włączone do weryfikacji w Confirmation (tablica hashy z co najmniej DIVISION_KEYS).
+    def enabled_divisions
+      response = with_token { |token| get("divisions", token:, body: { enabled_in_confirmation: true }, remote_ip: nil) }
+      raise Unavailable, "NETPAR /divisions: HTTP #{response.code}" unless response.is_a?(Net::HTTPOK)
+
+      rows = parse(response, expect: "divisions")
+      raise Unavailable, "NETPAR /divisions: niekompletne dane" unless rows.is_a?(Array) && rows.all? { it.is_a?(Hash) && (DIVISION_KEYS - it.keys).empty? }
+
+      rows
     end
 
     private

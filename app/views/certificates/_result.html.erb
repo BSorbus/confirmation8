@@ -29,7 +29,7 @@
             <%= f.hidden_field attribute, value: search.public_send(attribute), id: nil %>
           <% end %>
           <%= f.hidden_field :no_expiry, value: search.no_expiry ? "1" : "0", id: nil %>
-          <button type="submit" class="btn btn-primary btn-lg">
+          <button type="submit" class="btn btn-primary">
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>
             <%= t(".download_pdf") %>
           </button>

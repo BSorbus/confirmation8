@@ -4,9 +4,10 @@ shared:
   netpar:
     open_timeout: 5
     read_timeout: 10
-  # Kategorie widoczne w formularzu (kody jak w NETPAR: M, L, R). Kategorie L i R wymagają
-  # w NETPAR endpointu certificates/search_by_multi_params – do tego czasu można je wyłączyć
-  # zmienną CONFIRMATION_CATEGORIES=M.
+  # Kategorie (zakładki), które pokazujemy użytkownikom – kody jak w NETPAR: M, L, R.
+  # Rodzaje świadectw w każdej zakładce ustala NETPAR (divisions.enabled_in_confirmation) – gdy w danej
+  # kategorii żaden nie jest zaznaczony, lista rodzajów jest pusta. Na serwerze można nadpisać zmienną
+  # CONFIRMATION_CATEGORIES, np. "M".
   categories: <%= ENV.fetch("CONFIRMATION_CATEGORIES", "M,L,R").split(",").map(&:strip) %>
   matomo:
     enabled: false
@@ -19,8 +20,12 @@ test:
     url: https://netpar.test/api/v1
     user: confirmation
   search_url: https://confirmation.test/certificates/new
+  # Testy obejmują wszystkie kategorie – niezależnie od domyślnej wartości dla serwerów.
+  categories: [M, L, R]
 
 production:
+  # Na serwerach domyślnie bez radioamatorskich (R) – do decyzji urzędu (dotyczy też serwera testowego).
+  categories: <%= ENV.fetch("CONFIRMATION_CATEGORIES", "M,L").split(",").map(&:strip) %>
   # Na serwerze testowym wyłączane w credentials (matomo.enabled: false) – patrz initializer.
   matomo:
     enabled: true

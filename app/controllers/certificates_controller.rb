@@ -1,7 +1,7 @@
 class CertificatesController < ApplicationController
-  rate_limit to: SEARCH_RATE_LIMIT, within: 1.minute, only: :create, with: -> { set_category; render_outcome(:too_many_requests, :too_many_requests) }
+  rate_limit to: SEARCH_RATE_LIMIT, within: 1.minute, only: :create, with: -> { render_too_many_requests }
 
-  before_action :set_category
+  before_action :require_divisions, :set_category, :require_enabled_category
 
   def new
     @search = if params[:number].present? || params[:name].present?
@@ -27,6 +27,36 @@ class CertificatesController < ApplicationController
   end
 
   private
+    # Rodzaje i kategorie (zakładki) pochodzą z NETPAR – bez nich pokazujemy komunikat o niedostępności.
+    def require_divisions
+      render_unavailable unless netpar_available?
+    end
+
+    def require_enabled_category
+      raise ActionController::RoutingError, "Kategoria niewłączona w NETPAR" unless @category.enabled?
+    end
+
+    def netpar_available?
+      Division.all
+      true
+    rescue Netpar::Unavailable => e
+      Rails.logger.error("[NETPAR] #{e.message}")
+      false
+    end
+
+    # Formularz bez zakładek i listy rodzajów, z komunikatem o niedostępności.
+    def render_unavailable
+      @category = Category.find(params[:category]) || Category::ALL.first
+      render_outcome(:unavailable, :service_unavailable)
+    end
+
+    def render_too_many_requests
+      return render_unavailable unless netpar_available?
+
+      set_category
+      render_outcome(:too_many_requests, :too_many_requests)
+    end
+
     def render_outcome(outcome, status)
       @outcome = outcome
       @search ||= CertificateSearch.new(category_slug: @category.slug)

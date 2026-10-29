@@ -64,17 +64,23 @@ bin/brakeman       # bezpieczeństwo
 | Plik / zmienna | Znaczenie |
 |---|---|
 | `config/confirmation.yml` | ustawienia niezależne od serwera: limity czasu NETPAR, kategorie, Matomo |
-| `CONFIRMATION_CATEGORIES` | widoczne kategorie, domyślnie `M,L,R` |
+| `CONFIRMATION_CATEGORIES` | kategorie (zakładki) pokazywane użytkownikom, domyślnie `M,L,R` |
 | `matomo.enabled` w credentials (lub `MATOMO_ENABLED`) | statystyki Matomo w produkcji (domyślnie włączone; na serwerze testowym `false`) |
-| `config/divisions.yml` | rodzaje świadectw – dosłowna kopia tabeli `divisions` z NETPAR |
 
 ## Współpraca z NETPAR
 
-Kontrakt API opisuje `app/clients/netpar/client.rb`. Świadectwa morskie (M) korzystają z istniejącego
-endpointu `certificates/mor_search_by_multi_params`. Lotnicze (L) i radioamatorskie (R) wymagają w NETPAR
-endpointu `certificates/search_by_multi_params` z parametrem `category` – do czasu jego wdrożenia
-wyszukiwanie w tych kategoriach kończy się komunikatem „Weryfikacja chwilowo niedostępna”
-(kategorie można ukryć: `CONFIRMATION_CATEGORIES=M`).
+Kontrakt API opisuje `app/clients/netpar/client.rb`:
+
+- `GET /divisions` z `enabled_in_confirmation: true` – rodzaje świadectw, które urząd zaznaczył w panelu NETPAR
+  jako „Dozwolony dla weryfikacji w Confirmation” (`divisions.enabled_in_confirmation`). Lista jest pobierana
+  na żywo przy każdym wyświetleniu strony – bez pamięci podręcznej i bez lokalnej kopii.
+- Zakładki formularza: confirmation8 decyduje, które kategorie (M, L, R) pokazuje (`categories` /
+  `CONFIRMATION_CATEGORIES`), a NETPAR – które rodzaje są w nich dostępne. Gdy w NETPAR żaden rodzaj
+  danej kategorii nie jest zaznaczony, zakładka jest widoczna z pustą listą rodzajów.
+- `GET /confirmation/certificates/search` – weryfikacja świadectwa we wszystkich kategoriach (parametr `category`).
+  NETPAR wyszukuje tylko świadectwa rodzajów włączonych do weryfikacji.
+
+Gdy NETPAR nie odpowiada, strona pokazuje komunikat „Weryfikacja chwilowo niedostępna”.
 
 ## Zgodność z poprzednią wersją
 

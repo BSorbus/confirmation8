@@ -18,10 +18,11 @@ class Netpar::ClientTest < ActiveSupport::TestCase
     assert_requested search.with(
       headers: { "Authorization" => "Token token=tok-1", "X-Real-IP" => "203.0.113.5", "Content-Type" => "application/json" },
       body: { number_prefix: "GG-", number: "05998", date_of_issue: "2018-08-30", valid_thru: "2028-08-30",
-              name: "kozlowski", given_names: "JAN MARIA", birth_date: "1969-07-06" }.to_json)
+              name: "kozlowski", given_names: "JAN MARIA", birth_date: "1969-07-06", category: "M" }.to_json)
   end
 
   test "token pobierany z uwierzytelnieniem i zapamiętywany" do
+    Rails.cache.clear # token pobrany w setup przy walidacji (lista rodzajów)
     token = stub_netpar_token
     stub_netpar_search
     2.times { @client.find_certificate(@search, remote_ip: "203.0.113.5") }
@@ -31,7 +32,7 @@ class Netpar::ClientTest < ActiveSupport::TestCase
 
   test "wygasły token: pobranie nowego i ponowienie zapytania" do
     stub_netpar_token
-    stub_request(:get, "#{NETPAR_URL}/certificates/mor_search_by_multi_params")
+    stub_request(:get, "#{NETPAR_URL}/confirmation/certificates/search")
       .to_return({ status: 401, body: "{}" }, { status: 200, body: { certificates: [ netpar_certificate ] }.to_json })
 
     assert @client.find_certificate(@search, remote_ip: "203.0.113.5")
@@ -51,10 +52,10 @@ class Netpar::ClientTest < ActiveSupport::TestCase
     assert @client.find_certificate(@search, remote_ip: "203.0.113.5").unlimited?
   end
 
-  test "kategorie L i R: osobny endpoint z parametrem category" do
+  test "kategoria w zapytaniu (jeden endpoint dla L, M, R)" do
     search = CertificateSearch.new(valid_search_params(division_id: 7, number: "1234").merge(category_slug: "aeronautical")).tap(&:valid?)
     stub_netpar_token
-    request = stub_netpar_search(path: "certificates/search_by_multi_params")
+    request = stub_netpar_search
 
     @client.find_certificate(search, remote_ip: "203.0.113.5")
 
@@ -66,8 +67,8 @@ class Netpar::ClientTest < ActiveSupport::TestCase
     {
       "błąd serwera" => -> { stub_netpar_search(status: 500) },
       "strona HTML zamiast JSON" => -> { stub_netpar_search(status: 404, body: "<html>Not Found</html>") },
-      "przekroczony czas" => -> { stub_request(:get, /mor_search_by_multi_params/).to_timeout },
-      "brak połączenia" => -> { stub_request(:get, /mor_search_by_multi_params/).to_raise(Errno::ECONNREFUSED) },
+      "przekroczony czas" => -> { stub_request(:get, %r{certificates/search}).to_timeout },
+      "brak połączenia" => -> { stub_request(:get, %r{certificates/search}).to_raise(Errno::ECONNREFUSED) },
       "niekompletna odpowiedź" => -> { stub_netpar_search(body: { certificates: [ { "number" => "GG-1" } ] }) },
       "200 z treścią null (brak endpointu w NETPAR)" => -> { stub_netpar_search(body: "null") },
       "200 bez listy świadectw" => -> { stub_netpar_search(body: { "id" => 1 }) }
@@ -76,6 +77,27 @@ class Netpar::ClientTest < ActiveSupport::TestCase
       stub_netpar_token
       stub.call
       assert_raises(Netpar::Unavailable, name) { @client.find_certificate(@search, remote_ip: "203.0.113.5") }
+    end
+  end
+
+  test "rodzaje włączone do weryfikacji: jedno zapytanie z enabled_in_confirmation" do
+    rows = [ { "id" => 11, "category" => "M", "number_prefix" => "GG-", "short_name" => "GOC", "name" => "a", "english_name" => "A",
+               "min_years_old" => 0, "enabled_in_confirmation" => true } ]
+    api = stub_netpar_divisions(rows)
+    WebMock::RequestRegistry.instance.reset! # bez zapytania z setup (walidacja wyszukiwania)
+
+    assert_equal rows, @client.enabled_divisions
+    assert_requested api.with(headers: { "Authorization" => "Token token=tok-1" })
+  end
+
+  test "rodzaje: błędna odpowiedź NETPAR zgłaszana jako niedostępność" do
+    {
+      "błąd serwera" => { status: 500, body: "{}" },
+      "brak listy" => { status: 200, body: "null" },
+      "niekompletny rodzaj" => { status: 200, body: { divisions: [ { "id" => 1, "name" => "a" } ] }.to_json }
+    }.each do |name, response|
+      stub_request(:get, "#{NETPAR_URL}/divisions").to_return(response)
+      assert_raises(Netpar::Unavailable, name) { @client.enabled_divisions }
     end
   end
 end
