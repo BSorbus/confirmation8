@@ -23,8 +23,8 @@ test:
   categories: [M, L, R]
 
 production:
-  # Na serwerach domyślnie bez radioamatorskich (R) – do decyzji urzędu (dotyczy też serwera testowego).
-  categories: <%= ENV.fetch("CONFIRMATION_CATEGORIES", "M,L").split(",").map(&:strip) %>
+  # Na serwerach wszystkie kategorie (M, L, R); wyłączenie – zmienna CONFIRMATION_CATEGORIES, np. "M,L".
+  categories: <%= ENV.fetch("CONFIRMATION_CATEGORIES", "M,L,R").split(",").map(&:strip) %>
   # Na serwerze testowym wyłączane w credentials (matomo.enabled: false) – patrz initializer.
   matomo:
     enabled: true
