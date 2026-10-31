@@ -21,8 +21,9 @@ Wymaga lokalnego NETPAR na `http://localhost:3001/api/v1` (inny adres: `NETPAR_U
 
 ## Sekrety (credentials)
 
-Dane dostępu przeniesione ze starego `config/secrets.yml` są w zaszyfrowanych plikach
-`config/credentials/development.yml.enc` i `config/credentials/production.yml.enc`:
+Dane dostępu przeniesione ze starego `config/secrets.yml` są w zaszyfrowanych plikach: lokalnie
+`config/credentials/development.yml.enc`, dla serwerów `config/deploy/<serwer>/production.yml.enc` (poza gitem,
+każdy serwer z własnym kluczem `config/deploy/<serwer>/production.key`):
 
 ```yaml
 secret_key_base: …          # tylko production; nowy, inny niż w starej aplikacji
@@ -35,8 +36,9 @@ matomo:
   enabled: false            # opcjonalnie, np. serwer testowy bez statystyk
 ```
 
-Edycja: `bin/rails credentials:edit --environment production`. Klucze `config/credentials/*.key`
-nie są w repozytorium – trzeba je przechowywać bezpiecznie i skopiować na serwer przy wdrożeniu.
+Edycja lokalnie: `bin/rails credentials:edit --environment development`; credentials serwera –
+`bin/rails encrypted:edit config/deploy/<serwer>/production.yml.enc --key config/deploy/<serwer>/production.key`.
+Klucze nie są w repozytorium – trzeba je przechowywać bezpiecznie; na serwer trafiają przez `mina <serwer> credentials:upload`.
 Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). Każdą wartość można nadpisać zmienną środowiskową (`NETPAR_URL`, `NETPAR_USER`, `NETPAR_PASSWORD`,
 `CONFIRMATION_SEARCH_URL`) – patrz `config/initializers/confirmation.rb`.
 
@@ -44,12 +46,13 @@ Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). 
 
 `config/deploy.rb` (adresy serwerów) i `config/deploy/<serwer>/` (credentials przygotowane dla danego serwera)
 są tylko lokalnie – w `.gitignore`. Opis zadań na początku `config/deploy.rb`; podgląd poleceń bez wykonywania:
-`bundle exec mina confirmation8-test deploy --simulate`.
+`bundle exec mina test2 deploy --simulate`. Credentials serwerów: `config/deploy/test2/` (serwer testowy),
+`config/deploy/prod/` (produkcja).
 
-Każdy serwer ma własną kopię credentials w `shared/config/credentials/` (pierwszeństwo przed wersją z git).
-Zmiana na serwerze: `cd /webapps/confirmation8/current && EDITOR=nano bin/credentials-edit production`,
-potem `touch tmp/restart.txt`. Nie używać tam `bin/rails credentials:edit` – zapisuje przez `mv` i zastąpiłby
-dowiązanie do `shared/` zwykłym plikiem w wydaniu (zmiana zniknęłaby przy następnym wdrożeniu).
+Każdy serwer ma własne credentials i klucz w `shared/config/credentials/` – w wydaniu `config/credentials` to
+dowiązanie do tego katalogu. Zmiana na serwerze:
+`cd /webapps/confirmation8/current && EDITOR=nano bin/rails credentials:edit --environment production`,
+potem `touch tmp/restart.txt`.
 
 ## Testy i kontrola jakości
 
