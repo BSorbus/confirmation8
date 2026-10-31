@@ -161,6 +161,15 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_requested :get, "#{NETPAR_URL}/divisions", times: 2
   end
 
+  test "tytuł sekcji danych: w zakładce Amatorskie także zaświadczenie (PL i EN)" do
+    get "/pl/certificates/amateur"
+    assert_select "legend", text: "1. Dane świadectwa / zaświadczenia"
+    get "/en/certificates/amateur"
+    assert_select "legend", text: "1. Certificate / attestation data"
+    get "/pl/certificates/maritime"
+    assert_select "legend", text: "1. Dane świadectwa"
+  end
+
   test "zakładki tylko dla kategorii włączonych w konfiguracji confirmation8" do
     settings = Rails.configuration.x.confirmation
     previous, settings[:categories] = settings[:categories], %w[M R]

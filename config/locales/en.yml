@@ -41,7 +41,10 @@ en:
       error_summary:
         one: "Correct 1 field to continue"
         other: "Correct %{count} fields to continue"
-      certificate_data: "1. Certificate data"
+      certificate_data:
+        maritime: "1. Certificate data"
+        aeronautical: "1. Certificate data"
+        amateur: "1. Certificate / attestation data"
       holder_data: "2. Holder data"
       choose_division: "Choose the type of certificate"
       number_hint:

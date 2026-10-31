@@ -43,7 +43,10 @@ pl:
         few: "Popraw %{count} pola, aby kontynuować"
         many: "Popraw %{count} pól, aby kontynuować"
         other: "Popraw %{count} pola, aby kontynuować"
-      certificate_data: "1. Dane świadectwa"
+      certificate_data:
+        maritime: "1. Dane świadectwa"
+        aeronautical: "1. Dane świadectwa"
+        amateur: "1. Dane świadectwa / zaświadczenia" # nowe
       holder_data: "2. Dane posiadacza"
       choose_division: "Wybierz rodzaj świadectwa"
       number_hint:

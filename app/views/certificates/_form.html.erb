@@ -16,7 +16,7 @@
   <% end %>
 
   <fieldset class="form-section">
-    <legend><%= t(".certificate_data") %></legend>
+    <legend><%= t(".certificate_data.#{category.slug}") %></legend>
 
     <div class="field">
       <%= f.label :number, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:number) %> <span class="required" aria-hidden="true">*</span><% end %>
