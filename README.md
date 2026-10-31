@@ -38,7 +38,7 @@ matomo:
 
 Edycja lokalnie: `bin/rails credentials:edit --environment development`; credentials serwera –
 `bin/rails encrypted:edit config/deploy/<serwer>/production.yml.enc --key config/deploy/<serwer>/production.key`.
-Klucze nie są w repozytorium – trzeba je przechowywać bezpiecznie; na serwer trafiają przez `mina <serwer> credentials:upload`.
+Klucze nie są w repozytorium – trzeba je przechowywać bezpiecznie; na serwer trafiają przez `mina <serwer> credentials:push`.
 Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). Każdą wartość można nadpisać zmienną środowiskową (`NETPAR_URL`, `NETPAR_USER`, `NETPAR_PASSWORD`,
 `CONFIRMATION_SEARCH_URL`) – patrz `config/initializers/confirmation.rb`.
 
@@ -52,7 +52,9 @@ są tylko lokalnie – w `.gitignore`. Opis zadań na początku `config/deploy.r
 Każdy serwer ma własne credentials i klucz w `shared/config/credentials/` – w wydaniu `config/credentials` to
 dowiązanie do tego katalogu. Zmiana na serwerze:
 `cd /webapps/confirmation8/current && EDITOR=nano bin/rails credentials:edit --environment production`,
-potem `touch tmp/restart.txt`.
+potem `touch tmp/restart.txt`. Z komputera lokalnego: `mina <serwer> credentials:show_remote` (co serwer ma ustawione, bez haseł), `credentials:edit_remote`
+(edycja na serwerze z kopią zapasową, sprawdzeniem startu aplikacji i restartem; potem lokalna kopia z serwera),
+`credentials:show_local` / `credentials:edit_local` (lokalna kopia, np. przed `credentials:push`) – opis w `config/deploy.rb`.
 
 ## Testy i kontrola jakości
 
