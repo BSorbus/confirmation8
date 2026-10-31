@@ -7,7 +7,6 @@ shared:
   # Kategorie (zakładki), które pokazujemy użytkownikom – kody jak w NETPAR: M, L, R.
   # Rodzaje świadectw w każdej zakładce ustala NETPAR (divisions.enabled_in_confirmation) – gdy w danej
   # kategorii żaden nie jest zaznaczony, lista rodzajów jest pusta. Na serwerze można nadpisać zmienną
-  # CONFIRMATION_CATEGORIES, np. "M".
   categories: <%= ENV.fetch("CONFIRMATION_CATEGORIES", "M,L,R").split(",").map(&:strip) %>
   matomo:
     enabled: false

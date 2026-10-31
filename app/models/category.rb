@@ -23,9 +23,13 @@ class Category < Data.define(:slug, :code, :number_length)
 
   def divisions = Division.for_category(code)
 
-  # Zatwierdzone zaświadczenie PDF ma treść dotyczącą świadectw morskich (ITU RR, IMO STCW).
-  # Dla pozostałych kategorii PDF będzie dostępny, gdy urząd zatwierdzi jego treść.
-  def statement? = code == "M"
+  # Zaświadczenie PDF – dla kategorii, które mają treści w config/statements.yml.
+  def statement? = statement_texts.present?
+
+  def statement_texts = Rails.configuration.x.statements[:categories][code.to_sym]
+
+  # Adres kontaktowy kategorii (ten sam co w stopce zaświadczenia).
+  def contact_email = statement_texts&.dig(:email)
 
   def to_param = slug
 end

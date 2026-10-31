@@ -73,9 +73,12 @@
           <p><%= t("layouts.footer.brand_note") %></p>
         </div>
         <div class="site-footer__section">
-          <p class="site-footer__heading"><%= t("layouts.footer.contact") %></p>
+          <p class="site-footer__heading site-footer__heading--icon"><svg class="site-footer__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><%= t("layouts.footer.contact") %></p>
+          <%# Kontakt dla każdej włączonej kategorii (config/confirmation.yml) – adres z config/statements.yml. %>
           <ul class="site-footer__links">
-            <li><%= mail_to t("layouts.footer.contact_mail") do %><svg class="site-footer__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><%= t("layouts.footer.contact_mail") %><% end %></li>
+            <% Category.enabled.select(&:contact_email).each do |category| %>
+              <li><%= mail_to category.contact_email do %><%= render "certificates/category_icon", category:, size: 16, css_class: "site-footer__icon" %><span><%= t("categories.#{category.slug}") %>: <%= category.contact_email %></span><% end %></li>
+            <% end %>
           </ul>
         </div>
         <div class="site-footer__section">

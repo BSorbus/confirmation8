@@ -42,6 +42,8 @@ module Confirmation8
 
     # Ustawienia aplikacji: API NETPAR, adres w kodzie QR, włączone kategorie, Matomo.
     config.x.confirmation = config_for(:confirmation)
+    # Treści zaświadczenia PDF dla kategorii świadectw (miejsce, podstawa wydania, e-mail).
+    config.x.statements = config_for(:statements)
 
     # Don't generate system test files.
     config.generators.system_tests = nil

@@ -175,6 +175,21 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     settings[:categories] = previous
   end
 
+  test "stopka: kontakt dla każdej włączonej kategorii (adresy z config/statements.yml)" do
+    get "/pl"
+    assert_select ".site-footer__links a[href='mailto:ske.gdynia@uke.gov.pl']", text: "Morskie: ske.gdynia@uke.gov.pl"
+    assert_select ".site-footer__links a[href='mailto:wml@uke.gov.pl']", count: 2
+    assert_select ".site-footer__links a", text: "Lotnicze: wml@uke.gov.pl"
+    assert_select ".site-footer__links a", text: "Amatorskie: wml@uke.gov.pl"
+
+    settings = Rails.configuration.x.confirmation
+    previous, settings[:categories] = settings[:categories], %w[M]
+    get "/pl"
+    assert_select ".site-footer__links a[href^='mailto:']", count: 1
+  ensure
+    settings[:categories] = previous if settings
+  end
+
   test "kategoria bez rodzajów włączonych w NETPAR: zakładka widoczna, pusta lista rodzajów" do
     stub_netpar_divisions(NETPAR_DIVISIONS.select { it["category"] == "M" })
 
@@ -185,14 +200,28 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_select "select#certificate_search_division_id option[data-prefix]", count: 0
   end
 
-  test "PDF tylko dla kategorii morskiej (zatwierdzona treść)" do
+  test "PDF dla kategorii z treściami zaświadczenia (config/statements.yml)" do
     stub_netpar_token
     stub_netpar_search(body: { certificates: [ netpar_certificate("number" => "L-1234", "category" => "L") ] })
 
     search!(category: "aeronautical", params: valid_search_params(division_id: 1, number: "1234"))
 
     assert_match "Świadectwo potwierdzone", response.body
+    assert_match "Pobierz zaświadczenie (PDF)", response.body
+  end
+
+  test "bez PDF dla kategorii bez treści zaświadczenia" do
+    stub_netpar_token
+    stub_netpar_search(body: { certificates: [ netpar_certificate("number" => "L-1234", "category" => "L") ] })
+    statements = Rails.configuration.x.statements
+    Rails.configuration.x.statements = statements.merge(categories: statements[:categories].except(:L))
+
+    search!(category: "aeronautical", params: valid_search_params(division_id: 1, number: "1234"))
+
+    assert_match "Świadectwo potwierdzone", response.body
     assert_no_match "Pobierz zaświadczenie (PDF)", response.body
+  ensure
+    Rails.configuration.x.statements = statements
   end
 
   test "limit zapytań: 50 na minutę z jednego adresu" do

@@ -1,0 +1,92 @@
+# Treści zaświadczenia PDF (app/pdfs/pdf_statement.rb) i adresy kontaktowe dla kategorii świadectw.
+# Zaświadczenie jest dostępne tylko dla kategorii opisanych w `categories` (Category#statement?).
+#
+# categories.<kod NETPAR>:
+#   language – język zaświadczenia (etykiety z `labels.<język>` i logo)
+#   place    – miejsce w nagłówku („<miejsce>, <data>”)
+#   title    – tytuł; %{short_name} = skrót rodzaju świadectwa z NETPAR (divisions.short_name)
+#   basis    – podstawa wydania świadectwa (akapit pod danymi)
+#   divisions – dla rodzajów o danym skrócie (divisions.short_name): dodatkowe zdanie `extra` (po `basis`)
+#               albo własne `title`, `intro`, `basis`
+#   email    – adres w stopce zaświadczenia; ten sam adres jest kontaktem dla kategorii na stronie
+#
+# M – zatwierdzone, 1:1 z poprzedniej wersji aplikacji. Nie zmieniać bez zgody urzędu.
+# L, R – nowe (oznaczone „# nowe”), przygotowane na wzór M; podstawy wg stanu prawnego na 31.10.2026 (bez powoływania
+# rozporządzenia z 2015 r., które wygasa 10.11.2026). Zdania o HAREC i ERC Report 32 – dosłownie z zaświadczenia
+# o zdaniu egzaminu radioamatorskiego drukowanego przez NETPAR (pdf_examination_attestations_r.rb).
+# \u00A0 – twarda spacja: oznaczenia dokumentów (np. „T/R 61-02”) nie dzielą się przy zawijaniu wiersza.
+shared:
+  categories:
+    M:
+      language: en
+      place: "Gdynia"
+      title: "Confirmation %{short_name}"
+      basis: "The above certificate has been issued according to ITU Radio Regulations and the IMO STCW Convention by the President of the Office of Electronic Communications."
+      email: "ske.gdynia@uke.gov.pl"
+
+    L: # nowe
+      language: en
+      place: "Warszawa"
+      title: "Confirmation %{short_name}"
+      basis: "The above certificate has been issued by the President of the Office of Electronic Communications as the Polish authority competent to issue radio operator's certificates in the aeronautical radiocommunication service, in accordance with the international radio regulations."
+      email: "wml@uke.gov.pl"
+
+    R: # nowe
+      language: pl
+      place: "Warszawa"
+      title: "Potwierdzenie świadectwa operatora urządzeń radiowych w służbie radiokomunikacyjnej amatorskiej"
+      # Dawne świadectwa klas A–D (od 12.11.2024 nie są wydawane) – art. 95 ust. 2 ustawy wprowadzającej PKE.
+      basis: "Powyższe świadectwo zostało wydane przez Prezesa Urzędu Komunikacji Elektronicznej; na podstawie art.\u00A095 ust.\u00A02 ustawy z dnia 12 lipca 2024 r. – Przepisy wprowadzające ustawę – Prawo komunikacji elektronicznej zachowuje moc i jest równoważne zaświadczeniu o pozytywnym wyniku egzaminu, o którym mowa w art.\u00A0143 ust.\u00A02 ustawy – Prawo komunikacji elektronicznej."
+      # Rodzaje o danym skrócie (divisions.short_name): dodatkowe zdanie (extra) albo własne teksty (title, intro, basis).
+      # Kategorie pozwoleń dla klas A–D i zalecenia CEPT – rozporządzenie MC z 19.03.2026 (Dz.U. 2026 poz. 406), § 2–4.
+      # HAREC i ERC Report 32 – tylko przy zaświadczeniach kat. 1 i 3 (tak jak na zaświadczeniu drukowanym przez NETPAR).
+      divisions:
+        "A":
+          extra: "Uprawnia do ubiegania się o pozwolenie radiowe kategorii 1, wydawane z uwzględnieniem zalecenia CEPT\u00A0T/R\u00A061-01."
+        "B":
+          extra: "Uprawnia do ubiegania się o pozwolenie radiowe kategorii 1, wydawane z uwzględnieniem zalecenia CEPT\u00A0T/R\u00A061-01."
+        "C":
+          extra: "Uprawnia do ubiegania się o pozwolenie radiowe kategorii 3, wydawane z uwzględnieniem Zalecenia ECC\u00A0(05)06 CEPT."
+        "D":
+          extra: "Uprawnia do ubiegania się o pozwolenie radiowe kategorii 3, wydawane z uwzględnieniem Zalecenia ECC\u00A0(05)06 CEPT."
+        # Zaświadczenia kat. 1 i 3 – dokumenty wydawane po egzaminie od 12.11.2024 (Prawo komunikacji elektronicznej).
+        "1":
+          title: "Potwierdzenie zaświadczenia uprawniającego do uzyskania pozwolenia radiowego w służbie radiokomunikacyjnej amatorskiej"
+          intro: "Urząd Komunikacji Elektronicznej informuje, że zaświadczenie:"
+          basis: "Powyższe zaświadczenie o pozytywnym wyniku egzaminu, o którym mowa w art.\u00A0143 ust.\u00A02 ustawy z dnia 12 lipca 2024 r. – Prawo komunikacji elektronicznej, zostało wydane przez Prezesa Urzędu Komunikacji Elektronicznej."
+          extra: "Złożony egzamin odpowiada wymaganiom egzaminacyjnym, określonym w zaleceniu CEPT\u00A0T/R\u00A061-02\u00A0(HAREC)."
+        "3":
+          title: "Potwierdzenie zaświadczenia uprawniającego do uzyskania pozwolenia radiowego w służbie radiokomunikacyjnej amatorskiej"
+          intro: "Urząd Komunikacji Elektronicznej informuje, że zaświadczenie:"
+          basis: "Powyższe zaświadczenie o pozytywnym wyniku egzaminu, o którym mowa w art.\u00A0143 ust.\u00A02 ustawy z dnia 12 lipca 2024 r. – Prawo komunikacji elektronicznej, zostało wydane przez Prezesa Urzędu Komunikacji Elektronicznej."
+          extra: "Złożony egzamin odpowiada wymaganiom egzaminacyjnym, określonym w ERC\u00A0Report\u00A032."
+      email: "wml@uke.gov.pl"
+
+  # Etykiety zaświadczenia. en – zatwierdzone (1:1 z poprzedniej wersji); pl – nowe.
+  # %{english_name} (gdy brak w NETPAR – nazwa polska), %{name}, %{short_name} – rodzaj świadectwa z NETPAR;
+  # %{holder}, %{birth_date} – posiadacz.
+  labels:
+    en:
+      logo: "logo_uke_en_do_lewej.png"
+      value_x: 105 # kolumna wartości (rodzaj, numer, daty); etykiety od x = 20 (PdfStatement::LABEL_X)
+      intro: "Office of Electronic Communications informs that the certificate:"
+      type: "Type:"
+      type_value: "%{english_name} (%{short_name})"
+      number: "No.:"
+      date_of_issue: "Date of issue:"
+      valid_thru: "Valid till:"
+      no_expiry: "---------- (without expiry date)"
+      holder: "has been issued for %{holder} (date of birth %{birth_date})."
+      generated: "generated from https://confirmation.uke.gov.pl,  e-mail: %{email},  © 2018–%{year} UKE"
+    pl: # nowe
+      logo: "logo_uke_pl_do_lewej.png"
+      value_x: 110 # „Data wydania:” jest dłuższe niż „Date of issue:”
+      intro: "Urząd Komunikacji Elektronicznej informuje, że świadectwo:"
+      type: "Rodzaj:"
+      type_value: "%{name}"
+      number: "Nr:"
+      date_of_issue: "Data wydania:"
+      valid_thru: "Ważne do:"
+      no_expiry: "---------- (bezterminowe)"
+      holder: "zostało wydane dla: %{holder} (data urodzenia %{birth_date})."
+      generated: "wygenerowano z https://confirmation.uke.gov.pl,  e-mail: %{email},  © 2018–%{year} UKE"

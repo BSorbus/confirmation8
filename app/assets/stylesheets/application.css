@@ -294,6 +294,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .site-footer a:hover { color: #FFFFFF; }
 .site-footer__brand { font-size: 1.125rem; font-weight: 700; color: #FFFFFF; }
 .site-footer__heading { font-weight: 700; color: #FFFFFF; }
+.site-footer__heading--icon { display: flex; align-items: center; gap: 8px; }
 /* Linki z ikonami (jak w poprzedniej wersji); wysokość ≥ 32 px – łatwe trafienie palcem. */
 .site-footer__links li a { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; }
 .site-footer__icon { flex: none; }

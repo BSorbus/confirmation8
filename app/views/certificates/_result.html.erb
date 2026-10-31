@@ -53,7 +53,7 @@
       <ul>
         <% t(".not_found.tips").each do |tip| %><li><%= tip %></li><% end %>
       </ul>
-      <p><%= t(".not_found.contact_html", mail: mail_to(t("layouts.footer.contact_mail"))) %></p>
+      <p><%= t(".not_found.contact_html", mail: mail_to(category.contact_email || Category.enabled.filter_map(&:contact_email).first)) %></p>
     </div>
   </section>
 

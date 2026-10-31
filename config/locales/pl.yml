@@ -22,14 +22,13 @@ pl:
       brand: "Urząd Komunikacji Elektronicznej"
       brand_note: "Regulator rynku telekomunikacyjnego i pocztowego"
       contact: "Kontakt"
-      contact_mail: "ske.gdynia@uke.gov.pl"
       links: "Zobacz też"
       uke_url: "https://uke.gov.pl"
 
   categories:
     maritime: "Morskie"
     aeronautical: "Lotnicze"
-    amateur: "Radioamatorskie"
+    amateur: "Amatorskie"
 
   certificates:
     new:
