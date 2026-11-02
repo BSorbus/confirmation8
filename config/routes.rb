@@ -15,6 +15,9 @@ Rails.application.routes.draw do
       post "certificates/:category/statement", to: "statements#create", as: :category_statement
     end
 
+    # Kod QR karty plastikowej: krótki adres z kodem świadectwa – od razu wynik weryfikacji (CodesController).
+    get "qrc/:code", to: "codes#show", as: :qrc
+
     root "certificates#new"
   end
 end

@@ -40,9 +40,9 @@ Edycja lokalnie: `bin/rails credentials:edit --environment development`; credent
 Klucze nie są w repozytorium – trzeba je przechowywać bezpiecznie; na serwer trafiają przez `mina <serwer> credentials:push`.
 Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). Każdą wartość można nadpisać zmienną środowiskową (`NETPAR_URL`, `NETPAR_USER`, `NETPAR_PASSWORD`) – patrz `config/initializers/confirmation.rb`.
 
-Adres w kodzie QR na zaświadczeniu buduje NETPAR (pole `verification_url` w odpowiedzi API weryfikacji – ten sam adres
-co na karcie plastikowej); adres formularza ustawia się w NETPAR: `confirmation_search_url` w `config/secrets.yml`
-(domyślnie `https://confirmation.uke.gov.pl/certificates/new`). Dawny klucz `search_url` w credentials nie jest już używany.
+Adres w kodzie QR na zaświadczeniu buduje NETPAR (pole `verification_url` w odpowiedzi API weryfikacji – krótki adres
+`<confirmation>/qrc/<kod świadectwa>`, ten sam co na karcie plastikowej); serwer confirmation NETPAR bierze z
+`confirmation_search_url` w swoim `config/secrets.yml` (domyślnie `https://confirmation.uke.gov.pl/certificates/new`). Dawny klucz `search_url` w credentials nie jest już używany.
 
 ## Wdrożenie (mina)
 
@@ -84,15 +84,17 @@ Kontrakt API opisuje `app/clients/netpar/client.rb`:
 - Zakładki formularza: confirmation8 decyduje, które kategorie (M, L, R) pokazuje (`categories` /
   `CONFIRMATION_CATEGORIES`), a NETPAR – które rodzaje są w nich dostępne. Gdy w NETPAR żaden rodzaj
   danej kategorii nie jest zaznaczony, zakładka jest widoczna z pustą listą rodzajów.
-- `GET /confirmation/certificates/search` – weryfikacja świadectwa we wszystkich kategoriach (parametr `category`).
-  NETPAR wyszukuje tylko świadectwa rodzajów włączonych do weryfikacji.
+- `GET /certificates/search` – weryfikacja po danych z formularza, we wszystkich kategoriach (parametr `category`).
+- `GET /certificates/search_by_code` – weryfikacja po kodzie świadectwa (parametr `code`) – strona `/qrc/<kod>`, na którą
+  prowadzi kod QR karty plastikowej i zaświadczenia; od razu wynik, bez klikania „Sprawdź”.
+- Obie odpowiedzi w tym samym formacie; NETPAR odmawia (403) dla rodzajów niewłączonych do weryfikacji.
 
 Gdy NETPAR nie odpowiada, strona pokazuje komunikat „Weryfikacja chwilowo niedostępna”.
 
 ## Zgodność z poprzednią wersją
 
-- Adresy `/certificates` i `/certificates/new?number_prefix=…&number=…` (kody QR na wydanych zaświadczeniach) działają
-  i wypełniają formularz morski.
+- Adresy `/certificates` i `/certificates/new?number_prefix=…&number=…` (długie kody QR na zaświadczeniach wydanych
+  przed kodem świadectwa) działają i wypełniają formularz. Nowe zaświadczenia mają krótki kod `/qrc/<kod>`.
 - Zaświadczenie PDF (`app/pdfs/pdf_statement.rb`) jest przeniesione 1:1 – teksty, układ i czcionki bez zmian.
   Dane do PDF pochodzą wyłącznie z odpowiedzi NETPAR (ponowne potwierdzenie przy każdym pobraniu).
 - Deklaracja dostępności (`app/views/pages/declaration.*.html.erb`) – treść bez zmian.

@@ -9,7 +9,9 @@ module ApplicationHelper
 
   # Ta sama strona w innym języku (formularz zachowuje dane z linku QR, jeśli jest to zwykłe wyświetlenie).
   def same_page_path(locale)
-    if @category
+    if controller_name == "codes" && params[:code].present?
+      qrc_path(params[:code], locale:) # wynik weryfikacji po kodzie z karty – ten sam kod w innym języku
+    elsif @category
       query = request&.get? ? request.query_parameters.slice(*LINK_PARAMS).symbolize_keys : {}
       category_certificates_path(@category, locale:, **query)
     elsif controller_name == "pages"

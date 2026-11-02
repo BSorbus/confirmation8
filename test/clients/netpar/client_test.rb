@@ -32,7 +32,7 @@ class Netpar::ClientTest < ActiveSupport::TestCase
 
   test "wygasły token: pobranie nowego i ponowienie zapytania" do
     stub_netpar_token
-    stub_request(:get, "#{NETPAR_URL}/confirmation/certificates/search")
+    stub_request(:get, "#{NETPAR_URL}/certificates/search")
       .to_return({ status: 401, body: "{}" }, { status: 200, body: { certificates: [ netpar_certificate ] }.to_json })
 
     assert @client.find_certificate(@search, remote_ip: "203.0.113.5")
@@ -106,5 +106,32 @@ class Netpar::ClientTest < ActiveSupport::TestCase
       stub_request(:get, "#{NETPAR_URL}/divisions").to_return(response)
       assert_raises(Netpar::Unavailable, name) { @client.enabled_divisions }
     end
+  end
+  # Kod świadectwa (QR karty i zaświadczenia: /qrc/<kod>) – search_by_code, ten sam format odpowiedzi co search.
+  test "weryfikacja po kodzie: świadectwo, odmowy, zły format bez zapytania do NETPAR" do
+    stub_netpar_token
+    found = stub_netpar_code
+    certificate = @client.find_by_code(CARD_CODE.downcase, remote_ip: "203.0.113.5") # wielkość liter bez znaczenia
+    assert_equal "GG-05998", certificate.number
+    assert_equal "Kozłowski", certificate.holder.name
+    assert_equal "https://confirmation.uke.gov.pl/qrc/#{CARD_CODE}", certificate.verification_url
+    assert_requested found.with(headers: { "Authorization" => "Token token=tok-1", "X-Real-IP" => "203.0.113.5" })
+
+    stub_netpar_code(status: 404)
+    assert_nil @client.find_by_code(CARD_CODE, remote_ip: nil)
+    stub_netpar_code(status: 403, body: { "error" => "Rodzaj świadectwa nie podlega weryfikacji internetowej" })
+    assert_equal :type_not_verifiable, @client.find_by_code(CARD_CODE, remote_ip: nil)
+
+    WebMock.reset_executed_requests!
+    %w[ABC 7KD3M9QX2PLAHT5I ../token].each { assert_nil @client.find_by_code(it, remote_ip: nil) }
+    assert_not_requested :get, %r{certificates/search_by_code}
+  end
+
+  test "weryfikacja po kodzie: NETPAR bez nowego endpointu albo błąd serwera – niedostępność" do
+    stub_netpar_token
+    stub_request(:get, "#{NETPAR_URL}/certificates/search_by_code").to_return(status: 200, body: "null", headers: json_headers)
+    assert_raises(Netpar::Unavailable) { @client.find_by_code(CARD_CODE, remote_ip: nil) }
+    stub_netpar_code(status: 500, body: { "error" => "x" })
+    assert_raises(Netpar::Unavailable) { @client.find_by_code(CARD_CODE, remote_ip: nil) }
   end
 end

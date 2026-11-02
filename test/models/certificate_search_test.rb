@@ -102,10 +102,12 @@ class CertificateSearchTest < ActiveSupport::TestCase
     assert record.valid?
   end
 
-  # Kontrakt z NETPAR: adres w kodzie QR buduje NETPAR (verification_url, CertificateVerificationUrl) – formularz musi
-  # wypełnić się z niego tymi samymi danymi, które NETPAR potwierdził.
-  test "adres z kodu QR od NETPAR (verification_url) wypełnia formularz weryfikacji" do
-    query = Rack::Utils.parse_query(URI.parse(netpar_certificate["verification_url"]).query)
+  # Zaświadczenia wydane przed kodem świadectwa mają w QR długi adres z danymi (format poprzedniej wersji) – nadal muszą
+  # wypełniać formularz (nowe zaświadczenia i karty: /qrc/<kod>).
+  test "długi adres z kodu QR wydanych wcześniej zaświadczeń wypełnia formularz weryfikacji" do
+    link = "https://confirmation.uke.gov.pl/certificates/new?number_prefix=GG-&number=05998&date_of_issue=2018-08-30" \
+           "&valid_thru=2028-08-30&name=Koz%C5%82owski&given_names=Jan+Maria&birth_date=1969-07-06"
+    query = Rack::Utils.parse_query(URI.parse(link).query)
     record = CertificateSearch.from_link(ActionController::Parameters.new(query), Category.find("aeronautical"))
     assert_equal "maritime", record.category_slug
     assert_equal [ "GG-", "05998", "2018-08-30", "2028-08-30", "Kozłowski", "Jan Maria", "1969-07-06" ],

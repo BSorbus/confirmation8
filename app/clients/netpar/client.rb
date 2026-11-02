@@ -8,14 +8,20 @@ module Netpar
   #   GET  /divisions  {"enabled_in_confirmation": true}
   #        rodzaje włączone do weryfikacji (divisions.enabled_in_confirmation), wszystkie kategorie
   #        → 200 {"divisions": […], "meta": {"total_count": n}}
-  #   GET  /confirmation/certificates/search           weryfikacja świadectwa (L, M, R), parametr "category";
-  #        NETPAR szuka tylko świadectw rodzajów z enabled_in_confirmation
-  #        → 200 {"certificates": […]} – znaleziono, 404 {"error": …} – brak danych, 406 {"error": …} – niekompletne dane
+  #   GET  /certificates/search                       weryfikacja po danych z formularza (L, M, R), parametr "category";
+  #        porównanie z bieżącym świadectwem i historią zmian
+  #   GET  /certificates/search_by_code  {"code": …}   weryfikacja po kodzie świadectwa (QR karty i zaświadczenia: /qrc/<kod>);
+  #        dane aktualne
+  #   Obie: → 200 {"certificates": […], "meta": …} (z "verification_url" – adres do kodu QR zaświadczenia),
+  #         403 {"error": …} – rodzaj wyłączony z weryfikacji, 404 {"error": …} – brak danych, 406 {"error": …} – niekompletne dane
   # Zapytania to GET z treścią JSON, nagłówki "Authorization: Token token=…" i "X-Real-IP".
   class Client
     TOKEN_CACHE_KEY = "netpar/token"
     TOKEN_TTL = 9.minutes
-    SEARCH_PATH = "confirmation/certificates/search"
+    SEARCH_PATH = "certificates/search"
+    SEARCH_BY_CODE_PATH = "certificates/search_by_code"
+    # Kod świadectwa: 16 znaków bez I, L, O, U (nadaje NETPAR) – inne odrzucamy bez pytania NETPAR.
+    CODE_FORMAT = /\A[0-9A-HJKMNP-TV-Z]{16}\z/
     DIVISION_KEYS = %w[id category number_prefix name english_name].freeze
 
     def initialize(config: Rails.configuration.x.confirmation[:netpar], cache: Rails.cache, password: config[:password])
@@ -27,26 +33,18 @@ module Netpar
       @cache = cache
     end
 
-    # Zwraca Certificate albo nil, gdy NETPAR nie potwierdza świadectwa.
+    # Weryfikacja po danych z formularza: Certificate, :type_not_verifiable albo nil (brak danych).
     def find_certificate(search, remote_ip:)
       body = search.to_netpar_params.merge(category: search.category.code)
-      response = with_token { |token| get(SEARCH_PATH, token:, body:, remote_ip:) }
+      certificate_from(with_token { |token| get(SEARCH_PATH, token:, body:, remote_ip:) })
+    end
 
-      case response
-      when Net::HTTPOK
-        certificates = parse(response, expect: "certificates")
-        certificates.first && Certificate.from_api(certificates.first)
-      when Net::HTTPForbidden
-        parse(response, expect: "error") # dane zgodne, ale rodzaj świadectwa wyłączony z weryfikacji internetowej
-        :type_not_verifiable
-      when Net::HTTPNotFound, Net::HTTPNotAcceptable
-        parse(response, expect: "error") # upewnia się, że to odpowiedź API, a nie np. strona błędu serwera
-        nil
-      else
-        raise Unavailable, "NETPAR: HTTP #{response.code}"
-      end
-    rescue KeyError, Date::Error => e
-      raise Unavailable, "NETPAR: niepoprawne dane w odpowiedzi (#{e.class})"
+    # Weryfikacja po kodzie świadectwa (QR: /qrc/<kod>) – jak find_certificate; kod o złym formacie – nil bez zapytania do NETPAR.
+    def find_by_code(code, remote_ip:)
+      code = code.to_s.strip.upcase
+      return nil unless code.match?(CODE_FORMAT)
+
+      certificate_from(with_token { |token| get(SEARCH_BY_CODE_PATH, token:, body: { code: }, remote_ip:) })
     end
 
     # Rodzaje świadectw włączone do weryfikacji w Confirmation (tablica hashy z co najmniej DIVISION_KEYS).
@@ -61,6 +59,25 @@ module Netpar
     end
 
     private
+      # Odpowiedź search / search_by_code (ten sam format).
+      def certificate_from(response)
+        case response
+        when Net::HTTPOK
+          certificates = parse(response, expect: "certificates")
+          certificates.first && Certificate.from_api(certificates.first)
+        when Net::HTTPForbidden
+          parse(response, expect: "error") # rodzaj świadectwa wyłączony z weryfikacji internetowej
+          :type_not_verifiable
+        when Net::HTTPNotFound, Net::HTTPNotAcceptable
+          parse(response, expect: "error") # upewnia się, że to odpowiedź API, a nie np. strona błędu serwera
+          nil
+        else
+          raise Unavailable, "NETPAR: HTTP #{response.code}"
+        end
+      rescue KeyError, Date::Error => e
+        raise Unavailable, "NETPAR: niepoprawne dane w odpowiedzi (#{e.class})"
+      end
+
       def with_token
         response = yield token
         return response unless response.is_a?(Net::HTTPUnauthorized)
