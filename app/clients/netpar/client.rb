@@ -36,6 +36,9 @@ module Netpar
       when Net::HTTPOK
         certificates = parse(response, expect: "certificates")
         certificates.first && Certificate.from_api(certificates.first)
+      when Net::HTTPForbidden
+        parse(response, expect: "error") # dane zgodne, ale rodzaj świadectwa wyłączony z weryfikacji internetowej
+        :type_not_verifiable
       when Net::HTTPNotFound, Net::HTTPNotAcceptable
         parse(response, expect: "error") # upewnia się, że to odpowiedź API, a nie np. strona błędu serwera
         nil

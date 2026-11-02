@@ -78,6 +78,16 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "kod QR świadectwa radioamatorskiego (R) otwiera zakładkę R i jego rodzaj, nie domyślną morską" do
+    get "/certificates/new", params: { number_prefix: "A-", number: "123", date_of_issue: "2019-01-01", valid_thru: "2029-01-01",
+                                       name: "Kowalski", given_names: "Jan", birth_date: "1970-01-01" }
+    assert_response :success
+    assert_select "a.category-tabs__tab.is-current[href*=?]", "amateur"
+    assert_select "form#search_form[action*=?]", "amateur"
+    assert_select "option[value='18'][selected]"
+    assert_select "input#certificate_search_number[value='123']"
+  end
+
   test "znalezione świadectwo (Turbo Stream)" do
     stub_netpar_token
     stub_netpar_search
@@ -231,6 +241,17 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "Pobierz zaświadczenie (PDF)", response.body
   ensure
     Rails.configuration.x.statements = statements
+  end
+
+  test "rodzaj wyłączony z weryfikacji internetowej: komunikat „niedostępna dla tego rodzaju”, nie „nie znaleziono”" do
+    stub_netpar_token
+    stub_netpar_search(status: 403, body: { error: "Rodzaj świadectwa nie podlega weryfikacji internetowej" })
+
+    search!
+    assert_response :success
+    assert_match "Weryfikacja online niedostępna dla tego rodzaju świadectwa", response.body
+    assert_match "nie podlega weryfikacji internetowej", response.body
+    assert_no_match "Nie znaleziono świadectwa", response.body
   end
 
   test "limit zapytań: 50 na minutę z jednego adresu" do

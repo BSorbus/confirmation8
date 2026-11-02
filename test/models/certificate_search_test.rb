@@ -81,4 +81,32 @@ class CertificateSearchTest < ActiveSupport::TestCase
     assert record.no_expiry
     assert record.valid?
   end
+
+  # Kod QR nie niesie kategorii – musi ją wyznaczyć prefiks numeru (wcześniej L/R trafiały w domyślną kategorię morską).
+  test "link QR świadectwa radioamatorskiego (R) ustawia kategorię i rodzaj z prefiksu, mimo domyślnej morskiej" do
+    link = ActionController::Parameters.new(number_prefix: "A-", number: "123", date_of_issue: "2019-01-01", valid_thru: "2029-01-01",
+                                            name: "Kowalski", given_names: "Jan", birth_date: "1970-01-01")
+    record = CertificateSearch.from_link(link, Category.find("maritime"))
+    assert_equal "amateur", record.category_slug
+    assert_equal 18, record.division_id
+    assert_equal "A-", record.number_prefix
+    assert record.valid?
+  end
+
+  test "link QR świadectwa lotniczego (L): kategoria z prefiksu „L-”, rodzaj z tym prefiksem (do NETPAR idzie number_prefix)" do
+    link = ActionController::Parameters.new(number_prefix: "L-", number: "123", date_of_issue: "2019-01-01", valid_thru: "2029-01-01",
+                                            name: "Kowalski", given_names: "Jan", birth_date: "1970-01-01")
+    record = CertificateSearch.from_link(link, Category.find("maritime"))
+    assert_equal "aeronautical", record.category_slug
+    assert_equal "L-", record.number_prefix
+    assert record.valid?
+  end
+
+  test "link QR z nieznanym prefiksem zostaje przy kategorii zastępczej" do
+    link = ActionController::Parameters.new(number_prefix: "ZZZ-", number: "12345", date_of_issue: "2019-01-01", valid_thru: "2029-01-01",
+                                            name: "Kowalski", given_names: "Jan", birth_date: "1970-01-01")
+    record = CertificateSearch.from_link(link, Category.find("maritime"))
+    assert_equal "maritime", record.category_slug
+    assert_not_nil record.division_id
+  end
 end

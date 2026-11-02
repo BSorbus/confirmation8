@@ -71,6 +71,19 @@
 <% when :invalid %>
   <div class="info-card"><p><%= t(".invalid") %></p></div>
 
+<% when :type_not_verifiable %>
+  <section class="result-card result-card--warning" data-controller="result" aria-labelledby="result_heading">
+    <div class="result-card__head">
+      <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <div>
+        <h2 id="result_heading" tabindex="-1" data-result-target="heading"><%= t(".type_not_verifiable.title") %></h2>
+      </div>
+    </div>
+    <div class="result-card__body">
+      <p><%= t(".type_not_verifiable.body_html", mail: mail_to(category.contact_email || Category.enabled.filter_map(&:contact_email).first)) %></p>
+    </div>
+  </section>
+
 <% else %>
   <div class="info-card">
     <h2><%= t(".how.title") %></h2>

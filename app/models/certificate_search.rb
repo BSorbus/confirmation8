@@ -33,9 +33,17 @@ class CertificateSearch
 
   # Wypełnienie formularza z linku w kodzie QR starych i nowych zaświadczeń:
   # ?number_prefix=GG-&number=05998&date_of_issue=…&valid_thru=…&name=…&given_names=…&birth_date=…
-  def self.from_link(params, category)
-    division = category.divisions.find { it.number_prefix == params[:number_prefix] } || category.divisions.first
-    new(category_slug: category.slug, division_id: division.id, number: params[:number],
+  # Kategoria wynika z prefiksu numeru (QR nie niesie kategorii), a nie z przekazanej domyślnej – inaczej kod QR
+  # świadectwa L/R otwierał złą zakładkę i zły rodzaj. Gdy prefiksu nie ma wśród włączonych rodzajów, zostaje przekazana
+  # kategoria zastępcza (fallback_category) z jej pierwszym rodzajem.
+  def self.from_link(params, fallback_category)
+    division = Division.find_by_prefix(params[:number_prefix])
+    category = division && Category.for_code(division.category)
+    unless category&.enabled?
+      category = fallback_category
+      division = fallback_category.divisions.first
+    end
+    new(category_slug: category.slug, division_id: division&.id, number: params[:number],
         date_of_issue: params[:date_of_issue], valid_thru: params[:valid_thru],
         no_expiry: params[:name].present? && params[:valid_thru].blank?,
         name: params[:name], given_names: params[:given_names], birth_date: params[:birth_date])

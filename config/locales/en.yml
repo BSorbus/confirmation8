@@ -87,6 +87,9 @@ en:
       too_many_requests:
         title: "Too many attempts"
         body: "Too many searches in a short time. Please wait a minute and try again."
+      type_not_verifiable:
+        title: "Online verification is not available for this certificate type"
+        body_html: "This type of certificate is not subject to online verification. To confirm it, contact UKE: %{mail}"
       invalid: "Complete the marked fields – the result will appear here."
       how:
         title: "How does it work?"

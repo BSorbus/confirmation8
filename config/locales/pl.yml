@@ -89,6 +89,9 @@ pl:
       too_many_requests:
         title: "Zbyt wiele prób"
         body: "Wykonano zbyt wiele wyszukiwań w krótkim czasie. Odczekaj minutę i spróbuj ponownie."
+      type_not_verifiable:
+        title: "Weryfikacja online niedostępna dla tego rodzaju świadectwa"
+        body_html: "Ten rodzaj świadectwa nie podlega weryfikacji internetowej. W sprawie potwierdzenia skontaktuj się z UKE: %{mail}"
       invalid: "Uzupełnij zaznaczone pola – wynik pojawi się tutaj."
       how:
         title: "Jak to działa?"

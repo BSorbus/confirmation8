@@ -4,20 +4,25 @@ class CertificatesController < ApplicationController
   before_action :require_divisions, :set_category, :require_enabled_category
 
   def new
-    @search = if params[:number].present? || params[:name].present?
-      CertificateSearch.from_link(params, @category)
+    if params[:number].present? || params[:name].present?
+      @search = CertificateSearch.from_link(params, @category)
+      @category = @search.category # zakładka i lista rodzajów wg prefiksu z linku w kodzie QR (QR nie niesie kategorii)
     else
-      CertificateSearch.new(category_slug: @category.slug)
+      @search = CertificateSearch.new(category_slug: @category.slug)
     end
   end
 
   def create
     @search = build_search
 
-    if @search.invalid?
-      render_outcome(:invalid, :unprocessable_content)
-    elsif (@certificate = netpar.find_certificate(@search, remote_ip: request.remote_ip))
+    return render_outcome(:invalid, :unprocessable_content) if @search.invalid?
+
+    case (result = netpar.find_certificate(@search, remote_ip: request.remote_ip))
+    when Certificate
+      @certificate = result
       render_outcome(:found, :ok)
+    when :type_not_verifiable # dane zgodne, ale rodzaj wyłączony z weryfikacji internetowej (NETPAR 403)
+      render_outcome(:type_not_verifiable, :ok)
     else
       render_outcome(:not_found, :ok)
     end

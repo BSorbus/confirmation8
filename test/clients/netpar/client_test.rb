@@ -45,6 +45,13 @@ class Netpar::ClientTest < ActiveSupport::TestCase
     assert_nil @client.find_certificate(@search, remote_ip: "203.0.113.5")
   end
 
+  test "rodzaj wyłączony z weryfikacji internetowej (403) → :type_not_verifiable" do
+    stub_netpar_token
+    stub_netpar_search(status: 403, body: { error: "Rodzaj świadectwa nie podlega weryfikacji internetowej" })
+
+    assert_equal :type_not_verifiable, @client.find_certificate(@search, remote_ip: "203.0.113.5")
+  end
+
   test "świadectwo bezterminowe" do
     stub_netpar_token
     stub_netpar_search(body: { certificates: [ netpar_certificate("valid_thru" => "") ] })

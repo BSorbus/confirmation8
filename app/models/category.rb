@@ -17,6 +17,10 @@ class Category < Data.define(:slug, :code, :number_length)
     ALL.find { it.slug == slug.to_s }
   end
 
+  def self.for_code(code)
+    ALL.find { it.code == code }
+  end
+
   def self.default = enabled.first
 
   def enabled? = Category.enabled.include?(self)

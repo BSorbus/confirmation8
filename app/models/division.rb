@@ -20,6 +20,12 @@ class Division
     all.select { it.category == code }
   end
 
+  # Rodzaj po prefiksie numeru (z linku w kodzie QR). Prefiks jednoznacznie wskazuje kategorię; w kategorii L kilka
+  # rodzajów dzieli prefiks „L-” – bierzemy pierwszy, bo do NETPAR i tak idzie number_prefix, nie id rodzaju.
+  def self.find_by_prefix(number_prefix)
+    all.find { it.number_prefix == number_prefix } if number_prefix.present?
+  end
+
   def self.fetch
     Netpar::Client.new.enabled_divisions.map { new(**it.slice(*FIELDS.map(&:to_s)).symbolize_keys) }
   rescue Netpar::Unavailable
