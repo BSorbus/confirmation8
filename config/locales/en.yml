@@ -47,6 +47,8 @@ en:
         amateur: "1. Certificate / attestation data"
       holder_data: "2. Holder data"
       choose_division: "Choose the type of certificate"
+      date_format: "YYYY-MM-DD"
+      pick_date: "Pick a date from the calendar"
       number_hint:
         maritime: "choose the type of certificate and enter the 5 digits of the number, e.g. 05998"
         aeronautical: "choose the type of certificate and enter 2 to 5 digits of the number, e.g. 1234"

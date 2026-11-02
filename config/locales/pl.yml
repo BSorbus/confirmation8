@@ -49,6 +49,8 @@ pl:
         amateur: "1. Dane świadectwa / zaświadczenia" # nowe
       holder_data: "2. Dane posiadacza"
       choose_division: "Wybierz rodzaj świadectwa"
+      date_format: "RRRR-MM-DD"
+      pick_date: "Wybierz datę z kalendarza"
       number_hint:
         maritime: "wybierz rodzaj świadectwa i wpisz 5 cyfr numeru, np. 05998"
         aeronautical: "wybierz rodzaj świadectwa i wpisz od 2 do 5 cyfr numeru, np. 1234"

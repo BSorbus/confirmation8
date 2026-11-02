@@ -254,6 +254,17 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "Nie znaleziono świadectwa", response.body
   end
 
+  test "pola dat: sztywny format RRRR-MM-DD (pole tekstowe z pattern + przycisk kalendarza), nie natywne type=date" do
+    get "/pl/certificates"
+    assert_response :success
+    assert_select "input#certificate_search_date_of_issue[type=text][placeholder=?]", "RRRR-MM-DD"
+    assert_select "input#certificate_search_date_of_issue[pattern]"
+    assert_select "input#certificate_search_birth_date[type=text]"
+    assert_select ".date-field[data-controller=?]", "date-field"
+    assert_select ".date-field__button[data-date-field-target=?]", "button"
+    assert_select "input.date-field__native[type=date][tabindex=?]", "-1"
+  end
+
   test "limit zapytań: 50 na minutę z jednego adresu" do
     stub_netpar_token
     stub_netpar_search(status: 404)

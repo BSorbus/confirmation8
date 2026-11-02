@@ -38,13 +38,12 @@
     <div class="field-row">
       <div class="field">
         <%= f.label :date_of_issue, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:date_of_issue) %> <span class="required" aria-hidden="true">*</span><% end %>
-        <%= f.date_field :date_of_issue, class: "form-control form-control-sm", required: true, aria: field_aria(search, :date_of_issue) %>
+        <%= iso_date_field(f, search, :date_of_issue, required: true) %>
         <%= field_error(search, :date_of_issue) %>
       </div>
       <div class="field">
         <%= f.label :valid_thru, CertificateSearch.human_attribute_name(:valid_thru), class: "field__label" %>
-        <%= f.date_field :valid_thru, class: "form-control form-control-sm", disabled: search.no_expiry, aria: field_aria(search, :valid_thru),
-                         data: { certificate_form_target: "validThru" } %>
+        <%= iso_date_field(f, search, :valid_thru, disabled: search.no_expiry, field_data: { "certificate-form-target": "validThru" }) %>
         <%= field_error(search, :valid_thru) %>
       </div>
       <div class="field field--checkbox">
@@ -71,7 +70,7 @@
       </div>
       <div class="field">
         <%= f.label :birth_date, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:birth_date) %> <span class="required" aria-hidden="true">*</span><% end %>
-        <%= f.date_field :birth_date, class: "form-control form-control-sm", required: true, aria: field_aria(search, :birth_date) %>
+        <%= iso_date_field(f, search, :birth_date, required: true) %>
         <%= field_error(search, :birth_date) %>
       </div>
     </div>
