@@ -9,8 +9,10 @@ class StatementsController < ApplicationController
     search = build_search
     certificate = @category.statement? && @category.enabled? && search.valid? && netpar.find_certificate(search, remote_ip: request.remote_ip)
     return redirect_back_to_form(t(".not_confirmed")) unless certificate
+    # Adres do kodu QR buduje wyłącznie NETPAR – bez niego (NETPAR bez verification_url) zaświadczenia nie wydajemy.
+    raise Netpar::Unavailable, "brak verification_url w odpowiedzi NETPAR" if certificate.verification_url.blank?
 
-    pdf = PdfStatement.new(certificate, search_url: Rails.configuration.x.confirmation[:search_url])
+    pdf = PdfStatement.new(certificate)
     send_data pdf.render, filename: pdf.file_name, type: "application/pdf", disposition: "inline"
   rescue Netpar::Unavailable => e
     Rails.logger.error("[NETPAR] #{e.message}")

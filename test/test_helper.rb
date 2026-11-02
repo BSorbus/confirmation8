@@ -14,7 +14,9 @@ module NetparStubs
       "id" => 81115, "number" => "GG-05998", "date_of_issue" => "2018-08-30", "valid_thru" => "2028-08-30", "category" => "M",
       "division" => { "id" => 11, "name" => "świadectwo ogólne operatora GMDSS", "english_name" => "General operator's certificate",
                       "short_name" => "GOC", "number_prefix" => "GG-" },
-      "customer" => { "id" => 1, "name" => "Kozłowski", "given_names" => "Jan Maria", "birth_date" => "1969-07-06" }
+      "customer" => { "id" => 1, "name" => "Kozłowski", "given_names" => "Jan Maria", "birth_date" => "1969-07-06" },
+      "verification_url" => "https://confirmation.uke.gov.pl/certificates/new?number_prefix=GG-&number=05998&date_of_issue=2018-08-30" \
+                            "&valid_thru=2028-08-30&name=Koz%C5%82owski&given_names=Jan+Maria&birth_date=1969-07-06"
     }.deep_merge(overrides)
   end
 

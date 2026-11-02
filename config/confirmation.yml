@@ -1,5 +1,6 @@
-# Ustawienia aplikacji niezależne od serwera. Adres, użytkownik i hasło API NETPAR oraz search_url
-# są wyłącznie w credentials (lub zmiennych środowiskowych) – patrz config/initializers/confirmation.rb.
+# Ustawienia aplikacji niezależne od serwera. Adres, użytkownik i hasło API NETPAR są wyłącznie w credentials
+# (lub zmiennych środowiskowych) – patrz config/initializers/confirmation.rb. Adres w kodzie QR zaświadczenia
+# podaje NETPAR (verification_url; ustawienie confirmation_search_url w secrets.yml NETPAR).
 shared:
   netpar:
     open_timeout: 5
@@ -18,7 +19,6 @@ test:
   netpar:
     url: https://netpar.test/api/v1
     user: confirmation
-  search_url: https://confirmation.test/certificates/new
   # Testy obejmują wszystkie kategorie – niezależnie od domyślnej wartości dla serwerów.
   categories: [M, L, R]
 

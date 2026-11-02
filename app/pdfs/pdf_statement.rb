@@ -1,6 +1,7 @@
 # Zaświadczenie PDF. Zatwierdzony dokument – teksty, układ, czcionki i kod QR są przeniesione 1:1
 # z poprzedniej wersji aplikacji (app/pdfs/pdf_statement.rb). Nie zmieniać bez zgody urzędu.
-# Różnice: dane pochodzą z odpowiedzi API NETPAR (Certificate), a nie z parametrów adresu URL; teksty zależne
+# Różnice: dane pochodzą z odpowiedzi API NETPAR (Certificate), a nie z parametrów adresu URL; adres w kodzie QR
+# (verification_url) buduje NETPAR – jedno źródło dla zaświadczenia i karty plastikowej; teksty zależne
 # od kategorii świadectwa (język, miejsce, tytuł, podstawa wydania, e-mail) – z config/statements.yml (M bez zmian).
 class PdfStatement < Prawn::Document
   FONTS_DIR = Rails.root.join("vendor/fonts")
@@ -8,9 +9,8 @@ class PdfStatement < Prawn::Document
   PAGE_WIDTH = 525
   LABEL_X = 20 # etykiety Type / No. / Date of issue / Valid till (do 2026-10-31: 70)
 
-  def initialize(certificate, search_url:, author: "UKE")
+  def initialize(certificate, author: "UKE")
     @certificate = certificate
-    @search_url = search_url
     statements = Rails.configuration.x.statements
     category = statements[:categories].fetch(certificate.category.to_sym)
     # Teksty kategorii, nadpisane tekstami rodzaju świadectwa (np. zaświadczenia kat. 1 i 3 w służbie amatorskiej).
@@ -44,19 +44,9 @@ class PdfStatement < Prawn::Document
 
   def file_name = "#{@certificate.number}.pdf"
 
-  # Adres w kodzie QR – te same parametry co w poprzedniej wersji; otwiera formularz z wypełnionymi danymi.
-  def qrcode_content
-    cert = @certificate
-    "#{@search_url}?" + URI.encode_www_form(
-      number_prefix: cert.division.number_prefix,
-      number: cert.number.delete_prefix(cert.division.number_prefix.to_s),
-      date_of_issue: cert.date_of_issue.to_s,
-      valid_thru: cert.valid_thru.to_s,
-      name: cert.holder.name,
-      given_names: cert.holder.given_names,
-      birth_date: cert.holder.birth_date.to_s
-    )
-  end
+  # Adres w kodzie QR – z NETPAR (verification_url); otwiera formularz z wypełnionymi danymi (te same parametry co
+  # w poprzedniej wersji). Bez adresu z NETPAR zaświadczenia nie wydajemy (StatementsController).
+  def qrcode_content = @certificate.verification_url
 
   private
     def logo

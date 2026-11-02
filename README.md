@@ -31,7 +31,6 @@ netpar:
   url: https://…/api/v1
   user: confirmation
   password: …
-search_url: https://…/certificates/new
 matomo:
   enabled: false            # opcjonalnie, np. serwer testowy bez statystyk
 ```
@@ -39,8 +38,11 @@ matomo:
 Edycja lokalnie: `bin/rails credentials:edit --environment development`; credentials serwera –
 `bin/rails encrypted:edit config/deploy/<serwer>/production.yml.enc --key config/deploy/<serwer>/production.key`.
 Klucze nie są w repozytorium – trzeba je przechowywać bezpiecznie; na serwer trafiają przez `mina <serwer> credentials:push`.
-Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). Każdą wartość można nadpisać zmienną środowiskową (`NETPAR_URL`, `NETPAR_USER`, `NETPAR_PASSWORD`,
-`CONFIRMATION_SEARCH_URL`) – patrz `config/initializers/confirmation.rb`.
+Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). Każdą wartość można nadpisać zmienną środowiskową (`NETPAR_URL`, `NETPAR_USER`, `NETPAR_PASSWORD`) – patrz `config/initializers/confirmation.rb`.
+
+Adres w kodzie QR na zaświadczeniu buduje NETPAR (pole `verification_url` w odpowiedzi API weryfikacji – ten sam adres
+co na karcie plastikowej); adres formularza ustawia się w NETPAR: `confirmation_search_url` w `config/secrets.yml`
+(domyślnie `https://confirmation.uke.gov.pl/certificates/new`). Dawny klucz `search_url` w credentials nie jest już używany.
 
 ## Wdrożenie (mina)
 

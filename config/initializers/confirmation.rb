@@ -6,7 +6,6 @@
 #     url: https://…/api/v1
 #     user: confirmation
 #     password: …
-#   search_url: https://…/certificates/new   # adres formularza w kodzie QR na zaświadczeniu
 #   matomo:
 #     enabled: false                         # opcjonalnie – np. serwer testowy bez statystyk
 settings = Rails.configuration.x.confirmation
@@ -15,7 +14,6 @@ credentials = Rails.application.credentials
 settings[:netpar][:url] = ENV["NETPAR_URL"].presence || credentials.dig(:netpar, :url) || settings[:netpar][:url]
 settings[:netpar][:user] = ENV["NETPAR_USER"].presence || credentials.dig(:netpar, :user) || settings[:netpar][:user]
 settings[:netpar][:password] = ENV["NETPAR_PASSWORD"].presence || credentials.dig(:netpar, :password)
-settings[:search_url] = ENV["CONFIRMATION_SEARCH_URL"].presence || credentials[:search_url] || settings[:search_url]
 matomo_enabled = ENV["MATOMO_ENABLED"].presence || credentials.dig(:matomo, :enabled)
 settings[:matomo][:enabled] = ActiveModel::Type::Boolean.new.cast(matomo_enabled) unless matomo_enabled.nil?
 
@@ -23,7 +21,7 @@ settings[:matomo][:enabled] = ActiveModel::Type::Boolean.new.cast(matomo_enabled
 # Pomijane w testach (WebMock) i przy budowaniu zasobów bez kluczy (SECRET_KEY_BASE_DUMMY).
 unless Rails.env.test? || ENV["SECRET_KEY_BASE_DUMMY"].present?
   missing = { "netpar.url" => settings[:netpar][:url], "netpar.user" => settings[:netpar][:user],
-              "netpar.password" => settings[:netpar][:password], "search_url" => settings[:search_url] }
+              "netpar.password" => settings[:netpar][:password] }
             .select { |_, value| value.blank? }.keys
   if missing.any?
     raise "Brak ustawień: #{missing.join(", ")}. Uzupełnij config/credentials/#{Rails.env}.yml.enc " \

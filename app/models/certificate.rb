@@ -1,5 +1,6 @@
 # Świadectwo potwierdzone przez API NETPAR.
-class Certificate < Data.define(:number, :date_of_issue, :valid_thru, :category, :division, :holder)
+# verification_url – adres do kodu QR na zaświadczeniu, budowany wyłącznie w NETPAR (ten sam co na karcie plastikowej).
+class Certificate < Data.define(:number, :date_of_issue, :valid_thru, :category, :division, :holder, :verification_url)
   class Division < Data.define(:name, :english_name, :short_name, :number_prefix)
     def label(locale = I18n.locale)
       locale.to_s == "en" && english_name.present? ? english_name : name
@@ -18,7 +19,8 @@ class Certificate < Data.define(:number, :date_of_issue, :valid_thru, :category,
         division: Division.new(name: division["name"], english_name: division["english_name"],
                                short_name: division["short_name"], number_prefix: division["number_prefix"]),
         holder: Holder.new(name: customer["name"], given_names: customer["given_names"],
-                           birth_date: parse_date(customer["birth_date"])))
+                           birth_date: parse_date(customer["birth_date"])),
+        verification_url: data["verification_url"].presence)
   end
 
   def self.parse_date(value)

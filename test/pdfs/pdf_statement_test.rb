@@ -4,7 +4,7 @@ require "pdf-reader"
 class PdfStatementTest < ActiveSupport::TestCase
   setup do
     @certificate = Certificate.from_api(netpar_certificate)
-    @pdf = PdfStatement.new(@certificate, search_url: "https://confirmation.uke.gov.pl/certificates/new")
+    @pdf = PdfStatement.new(@certificate)
   end
 
   def text_lines
@@ -30,13 +30,12 @@ class PdfStatementTest < ActiveSupport::TestCase
   end
 
   test "świadectwo bezterminowe" do
-    @pdf = PdfStatement.new(Certificate.from_api(netpar_certificate("valid_thru" => "")), search_url: "x")
+    @pdf = PdfStatement.new(Certificate.from_api(netpar_certificate("valid_thru" => "")))
     assert_includes text_lines.join("\n"), "---------- (without expiry date)"
   end
 
-  test "kod QR prowadzi do formularza z danymi (te same parametry co w poprzedniej wersji)" do
-    assert_equal "https://confirmation.uke.gov.pl/certificates/new?number_prefix=GG-&number=05998&date_of_issue=2018-08-30" \
-                 "&valid_thru=2028-08-30&name=Koz%C5%82owski&given_names=Jan+Maria&birth_date=1969-07-06", @pdf.qrcode_content
+  test "kod QR – adres z NETPAR (verification_url), bez budowania po stronie confirmation8" do
+    assert_equal netpar_certificate["verification_url"], @pdf.qrcode_content
   end
 
   test "metadane dokumentu" do
@@ -46,7 +45,7 @@ class PdfStatementTest < ActiveSupport::TestCase
   end
   # Teksty L i R – z config/statements.yml (nowe, przygotowane na wzór M).
   def pdf_text_for(overrides)
-    pdf = PdfStatement.new(Certificate.from_api(netpar_certificate(overrides)), search_url: "x")
+    pdf = PdfStatement.new(Certificate.from_api(netpar_certificate(overrides)))
     PDF::Reader.new(StringIO.new(pdf.render)).pages.first.text.squish
   end
 

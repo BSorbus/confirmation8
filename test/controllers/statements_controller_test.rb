@@ -48,6 +48,17 @@ class StatementsControllerTest < ActionDispatch::IntegrationTest
     Rails.configuration.x.statements = statements
   end
 
+  # Adres do kodu QR buduje wyłącznie NETPAR – bez niego (np. NETPAR sprzed zmiany) zaświadczenia nie wydajemy.
+  test "brak PDF, gdy NETPAR nie podał adresu do kodu QR (verification_url)" do
+    stub_netpar_token
+    stub_netpar_search(body: { certificates: [ netpar_certificate.except("verification_url") ] })
+
+    post "/pl/certificates/maritime/statement", params: { certificate_search: valid_search_params }
+
+    assert_redirected_to "/pl/certificates/maritime"
+    assert_match "chwilowo niedostępny", flash[:alert]
+  end
+
   test "NETPAR niedostępny" do
     stub_request(:get, "#{NETPAR_URL}/token").to_timeout
 
