@@ -8,6 +8,7 @@
 #     password: …
 #   matomo:
 #     enabled: false                         # opcjonalnie – np. serwer testowy bez statystyk
+#   categories: [M, L]                       # opcjonalnie – zakładki na tym serwerze (domyślnie z confirmation.yml)
 settings = Rails.configuration.x.confirmation
 credentials = Rails.application.credentials
 
@@ -16,6 +17,9 @@ settings[:netpar][:user] = ENV["NETPAR_USER"].presence || credentials.dig(:netpa
 settings[:netpar][:password] = ENV["NETPAR_PASSWORD"].presence || credentials.dig(:netpar, :password)
 matomo_enabled = ENV["MATOMO_ENABLED"].presence || credentials.dig(:matomo, :enabled)
 settings[:matomo][:enabled] = ActiveModel::Type::Boolean.new.cast(matomo_enabled) unless matomo_enabled.nil?
+# Zakładki: "M,L" w zmiennej albo lista / tekst w credentials. W testach zawsze z confirmation.yml.
+categories = ENV["CONFIRMATION_CATEGORIES"].presence || credentials[:categories] unless Rails.env.test?
+settings[:categories] = Array(categories).flat_map { it.to_s.split(",") }.map { it.strip.upcase }.compact_blank if categories.present?
 
 # Bez kompletnych danych aplikacja nie startuje – zamiast po cichu łączyć się z niewłaściwym NETPAR.
 # Pomijane w testach (WebMock) i przy budowaniu zasobów bez kluczy (SECRET_KEY_BASE_DUMMY).

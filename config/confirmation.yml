@@ -7,8 +7,9 @@ shared:
     read_timeout: 10
   # Kategorie (zakładki), które pokazujemy użytkownikom – kody jak w NETPAR: M, L, R.
   # Rodzaje świadectw w każdej zakładce ustala NETPAR (divisions.enabled_in_confirmation) – gdy w danej
-  # kategorii żaden nie jest zaznaczony, lista rodzajów jest pusta. Na serwerze można nadpisać zmienną
-  categories: <%= ENV.fetch("CONFIRMATION_CATEGORIES", "M,L,R").split(",").map(&:strip) %>
+  # kategorii żaden nie jest zaznaczony, lista rodzajów jest pusta. Serwer może pokazać mniej zakładek:
+  # `categories: [M, L]` w credentials albo zmienna CONFIRMATION_CATEGORIES="M,L" – patrz initializer.
+  categories: [M, L, R]
   matomo:
     enabled: false
     url: https://stats.uke.gov.pl/
@@ -19,12 +20,8 @@ test:
   netpar:
     url: https://netpar.test/api/v1
     user: confirmation
-  # Testy obejmują wszystkie kategorie – niezależnie od domyślnej wartości dla serwerów.
-  categories: [M, L, R]
 
 production:
-  # Na serwerach wszystkie kategorie (M, L, R); wyłączenie – zmienna CONFIRMATION_CATEGORIES, np. "M,L".
-  categories: <%= ENV.fetch("CONFIRMATION_CATEGORIES", "M,L,R").split(",").map(&:strip) %>
   # Na serwerze testowym wyłączane w credentials (matomo.enabled: false) – patrz initializer.
   matomo:
     enabled: true

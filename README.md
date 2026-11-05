@@ -33,12 +33,13 @@ netpar:
   password: …
 matomo:
   enabled: false            # opcjonalnie, np. serwer testowy bez statystyk
+categories: [M, L]          # opcjonalnie – zakładki na tym serwerze (bez wpisu: M, L, R)
 ```
 
 Edycja lokalnie: `bin/rails credentials:edit --environment development`; credentials serwera –
 `bin/rails encrypted:edit config/deploy/<serwer>/production.yml.enc --key config/deploy/<serwer>/production.key`.
 Klucze nie są w repozytorium – trzeba je przechowywać bezpiecznie; na serwer trafiają przez `mina <serwer> credentials:push`.
-Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). Każdą wartość można nadpisać zmienną środowiskową (`NETPAR_URL`, `NETPAR_USER`, `NETPAR_PASSWORD`) – patrz `config/initializers/confirmation.rb`.
+Bez tych danych aplikacja nie wystartuje (komunikat „Brak ustawień: …”). Każdą wartość można nadpisać zmienną środowiskową (`NETPAR_URL`, `NETPAR_USER`, `NETPAR_PASSWORD`, `MATOMO_ENABLED`, `CONFIRMATION_CATEGORIES`) – patrz `config/initializers/confirmation.rb`.
 
 Adres w kodzie QR na zaświadczeniu buduje NETPAR (pole `verification_url` w odpowiedzi API weryfikacji – krótki adres
 `<confirmation>/qrc/<kod świadectwa>`, ten sam co na karcie plastikowej); serwer confirmation NETPAR bierze z
@@ -49,14 +50,14 @@ Adres w kodzie QR na zaświadczeniu buduje NETPAR (pole `verification_url` w odp
 `config/deploy.rb` (adresy serwerów) i `config/deploy/<serwer>/` (credentials przygotowane dla danego serwera)
 są tylko lokalnie – w `.gitignore`. Opis zadań na początku `config/deploy.rb`; podgląd poleceń bez wykonywania:
 `bundle exec mina test2 deploy --simulate`. Credentials serwerów: `config/deploy/test2/` (serwer testowy),
-`config/deploy/prod/` (produkcja).
+`config/deploy/prod2/` (produkcja, serwer 10.100.2.65).
 
 Każdy serwer ma własne credentials i klucz w `shared/config/credentials/` – w wydaniu `config/credentials` to
 dowiązanie do tego katalogu. Zmiana na serwerze:
 `cd /webapps/confirmation8/current && EDITOR=nano bin/rails credentials:edit --environment production`,
 potem `touch tmp/restart.txt`. Z komputera lokalnego: `mina <serwer> credentials:show_remote` (co serwer ma ustawione, bez haseł), `credentials:edit_remote`
 (edycja na serwerze z kopią zapasową, sprawdzeniem startu aplikacji i restartem; potem lokalna kopia z serwera),
-`credentials:show_local` / `credentials:edit_local` (lokalna kopia, np. przed `credentials:push`) – opis w `config/deploy.rb`.
+`credentials:show_local` / `credentials:edit_local` (lokalna kopia) i `credentials:push` (wysłanie lokalnej kopii z kluczem na serwer – zawsze, poprzednie pliki zostają jako `.bak-<czas>`; sprawdzenie startu i restart) – opis w `config/deploy.rb`.
 
 ## Testy i kontrola jakości
 
@@ -71,7 +72,7 @@ bin/brakeman       # bezpieczeństwo
 | Plik / zmienna | Znaczenie |
 |---|---|
 | `config/confirmation.yml` | ustawienia niezależne od serwera: limity czasu NETPAR, kategorie, Matomo |
-| `CONFIRMATION_CATEGORIES` | kategorie (zakładki) pokazywane użytkownikom, domyślnie `M,L,R` |
+| `categories` w credentials (lub `CONFIRMATION_CATEGORIES`) | kategorie (zakładki) pokazywane na danym serwerze, np. `categories: [M, L]` (zmienna: `M,L`); domyślnie wszystkie – `M,L,R` z `config/confirmation.yml` |
 | `matomo.enabled` w credentials (lub `MATOMO_ENABLED`) | statystyki Matomo w produkcji (domyślnie włączone; na serwerze testowym `false`) |
 
 ## Współpraca z NETPAR

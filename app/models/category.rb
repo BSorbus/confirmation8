@@ -1,5 +1,5 @@
 # Kategoria świadectw (zakładka formularza). `code` jak w NETPAR, `slug` w adresie strony.
-# Zakładki (kategorie) włącza config/confirmation.yml (`categories`); rodzaje w zakładce ustala NETPAR
+# Zakładki (kategorie) włącza `categories` z config/confirmation.yml (serwer może zawęzić w credentials); rodzaje w zakładce ustala NETPAR
 # (divisions.enabled_in_confirmation) – patrz Division.
 class Category < Data.define(:slug, :code, :number_length)
   ALL = [
