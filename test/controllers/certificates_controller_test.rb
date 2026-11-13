@@ -286,4 +286,43 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     get "/pl/certificates/statement_to_pdf.pdf", params: { req_data_certificate: { number: "GG-1" } }
     assert_response :not_found
   end
+
+  # Rodzaj GOC (id 11) podlega weryfikacji od 2018-09-01 (divisions.confirmation_issued_from w NETPAR).
+  def stub_goc_issued_from(date = "2018-09-01")
+    stub_netpar_divisions(NETPAR_DIVISIONS.map { it["id"] == 11 ? it.merge("confirmation_issued_from" => date) : it })
+    Current.reset
+  end
+
+  test "rodzaj z datą weryfikacji: podpowiedź w formularzu i data w opcji listy (dla JS)" do
+    stub_goc_issued_from
+    get "/pl/certificates/maritime"
+    assert_select "option[value='11'][data-issued-from='01.09.2018']"
+    assert_select "option[value='14'][data-issued-from]", count: 0
+    assert_select "#issued_from_hint[hidden]" # nic nie wybrano
+
+    stub_netpar_token
+    stub_netpar_search
+    search!(params: valid_search_params(date_of_issue: "2018-09-01"), as: :html) # wybrany GOC – podpowiedź widoczna
+    assert_select "#issued_from_hint:not([hidden])", text: "weryfikacja obejmuje świadectwa tego rodzaju wydane od 01.09.2018"
+  end
+
+  test "data wydania przed dniem weryfikacji: błąd pola, bez zapytania do NETPAR" do
+    stub_goc_issued_from
+    search!
+    assert_response :unprocessable_content
+    assert_match "weryfikacja internetowa obejmuje świadectwa tego rodzaju wydane od 01.09.2018", response.body
+    assert_not_requested :get, %r{certificates/search}
+  end
+
+  test "NETPAR odmawia – świadectwo wydane przed dniem weryfikacji (403 issued_before_limit): komunikat z datą, nie „nie znaleziono”" do
+    stub_netpar_token
+    stub_netpar_search(status: 403, body: { error: "Świadectwa wydane przed 2018-09-01 nie podlegają weryfikacji internetowej",
+                                            reason: "issued_before_limit", verifiable_from: "2018-09-01" })
+    search!
+    assert_response :success
+    assert_match "Weryfikacja online niedostępna dla świadectw wydanych przed 01.09.2018", response.body
+    assert_match "ske.gdynia@uke.gov.pl", response.body
+    assert_no_match "Nie znaleziono świadectwa", response.body
+    assert_no_match "Pobierz zaświadczenie (PDF)", response.body
+  end
 end

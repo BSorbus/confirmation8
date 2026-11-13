@@ -84,6 +84,20 @@
     </div>
   </section>
 
+<% when :issued_before_limit %>
+  <section class="result-card result-card--warning" data-controller="result" aria-labelledby="result_heading">
+    <div class="result-card__head">
+      <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <div>
+        <h2 id="result_heading" tabindex="-1" data-result-target="heading"><%= t(".issued_before_limit.title", date: display_date(local_assigns[:verifiable_from])) %></h2>
+      </div>
+    </div>
+    <div class="result-card__body">
+      <p><%= t(".issued_before_limit.body_html", date: display_date(local_assigns[:verifiable_from]),
+               mail: mail_to(category.contact_email || Category.enabled.filter_map(&:contact_email).first)) %></p>
+    </div>
+  </section>
+
 <% else %>
   <div class="info-card">
     <h2><%= t(".how.title") %></h2>

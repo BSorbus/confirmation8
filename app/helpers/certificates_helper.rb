@@ -38,7 +38,10 @@ module CertificatesHelper
   end
 
   def division_options(category, selected)
-    options = category.divisions.map { [ it.label, it.id, { "data-prefix" => it.number_prefix } ] }
+    options = category.divisions.map do |division|
+      [ division.label, division.id, { "data-prefix" => division.number_prefix,
+                                       "data-issued-from" => display_date(division.confirmation_issued_from) }.compact ]
+    end
     options_for_select(options, selected)
   end
 

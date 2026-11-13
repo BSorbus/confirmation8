@@ -28,6 +28,7 @@ class CertificateSearch
   validates :name, :given_names, presence: true, length: { maximum: 100 }
   validates :birth_date, presence: true
   validate :dates_format
+  validate :date_of_issue_verifiable
 
   before_validation :normalize
 
@@ -83,6 +84,16 @@ class CertificateSearch
       unless number.match?(/\A\d+\z/) && length.cover?(number.length)
         key = length.min == length.max ? :number_exact_digits : :number_digits_range
         errors.add(:number, key, min: length.min, max: length.max)
+      end
+    end
+
+    # Rodzaj podlega weryfikacji od dnia ustawionego w NETPAR – wcześniejsza data wydania od razu jako błąd pola
+    # (bez zapytania do NETPAR; NETPAR i tak odmówi – 403 issued_before_limit).
+    def date_of_issue_verifiable
+      return if division.nil? || date_of_issue.blank? || errors.include?(:date_of_issue)
+
+      if division.issued_before_limit?(Date.iso8601(date_of_issue))
+        errors.add(:date_of_issue, :before_verification_limit, date: division.confirmation_issued_from.strftime("%d.%m.%Y"))
       end
     end
 

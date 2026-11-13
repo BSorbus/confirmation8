@@ -88,7 +88,11 @@ Kontrakt API opisuje `app/clients/netpar/client.rb`:
 - `GET /certificates/search` – weryfikacja po danych z formularza, we wszystkich kategoriach (parametr `category`).
 - `GET /certificates/search_by_code` – weryfikacja po kodzie świadectwa (parametr `code`) – strona `/qrc/<kod>`, na którą
   prowadzi kod QR karty plastikowej i zaświadczenia; od razu wynik, bez klikania „Sprawdź”.
-- Obie odpowiedzi w tym samym formacie; NETPAR odmawia (403) dla rodzajów niewłączonych do weryfikacji.
+- Obie odpowiedzi w tym samym formacie. Odmowa weryfikacji – 403 z polem `reason`: `type_not_verifiable` (rodzaj
+  niewłączony do weryfikacji) albo `issued_before_limit` (świadectwo wydane przed dniem `verifiable_from`, od którego rodzaj
+  podlega weryfikacji – „Weryfikacja świadectw wydanych od” przy rodzaju w panelu NETPAR, `divisions.confirmation_issued_from`).
+  Tę datę zwraca też `/divisions` (`confirmation_issued_from`): formularz pokazuje ją pod datą wydania i od razu zgłasza
+  wcześniejszą datę jako błąd pola, bez zapytania do NETPAR.
 
 Gdy NETPAR nie odpowiada, strona pokazuje komunikat „Weryfikacja chwilowo niedostępna”.
 

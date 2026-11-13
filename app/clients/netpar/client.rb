@@ -13,7 +13,10 @@ module Netpar
   #   GET  /certificates/search_by_code  {"code": …}   weryfikacja po kodzie świadectwa (QR karty i zaświadczenia: /qrc/<kod>);
   #        dane aktualne
   #   Obie: → 200 {"certificates": […], "meta": …} (z "verification_url" – adres do kodu QR zaświadczenia),
-  #         403 {"error": …} – rodzaj wyłączony z weryfikacji, 404 {"error": …} – brak danych, 406 {"error": …} – niekompletne dane
+  #         403 {"error": …, "reason": …} – odmowa weryfikacji: "type_not_verifiable" – rodzaj wyłączony z weryfikacji,
+  #           "issued_before_limit" – świadectwo wydane przed dniem "verifiable_from" (RRRR-MM-DD), od którego rodzaj podlega
+  #           weryfikacji; bez reason (starszy NETPAR) – jak type_not_verifiable;
+  #         404 {"error": …} – brak danych, 406 {"error": …} – niekompletne dane
   # Zapytania to GET z treścią JSON, nagłówki "Authorization: Token token=…" i "X-Real-IP".
   class Client
     TOKEN_CACHE_KEY = "netpar/token"
@@ -33,7 +36,7 @@ module Netpar
       @cache = cache
     end
 
-    # Weryfikacja po danych z formularza: Certificate, :type_not_verifiable albo nil (brak danych).
+    # Weryfikacja po danych z formularza: Certificate, :type_not_verifiable, Netpar::IssuedBeforeLimit albo nil (brak danych).
     def find_certificate(search, remote_ip:)
       body = search.to_netpar_params.merge(category: search.category.code)
       certificate_from(with_token { |token| get(SEARCH_PATH, token:, body:, remote_ip:) })
@@ -66,8 +69,7 @@ module Netpar
           certificates = parse(response, expect: "certificates")
           certificates.first && Certificate.from_api(certificates.first)
         when Net::HTTPForbidden
-          parse(response, expect: "error") # rodzaj świadectwa wyłączony z weryfikacji internetowej
-          :type_not_verifiable
+          refusal_from(response)
         when Net::HTTPNotFound, Net::HTTPNotAcceptable
           parse(response, expect: "error") # upewnia się, że to odpowiedź API, a nie np. strona błędu serwera
           nil
@@ -76,6 +78,15 @@ module Netpar
         end
       rescue KeyError, Date::Error => e
         raise Unavailable, "NETPAR: niepoprawne dane w odpowiedzi (#{e.class})"
+      end
+
+      # 403 – odmowa weryfikacji; rodzaj odmowy w polu reason.
+      def refusal_from(response)
+        parse(response, expect: "error") # upewnia się, że to odpowiedź API
+        data = JSON.parse(response.body)
+        return :type_not_verifiable unless data["reason"] == "issued_before_limit"
+
+        IssuedBeforeLimit.new(verifiable_from: Date.iso8601(data.fetch("verifiable_from")))
       end
 
       def with_token

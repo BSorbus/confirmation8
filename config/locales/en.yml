@@ -53,6 +53,7 @@ en:
         maritime: "choose the type of certificate and enter the 5 digits of the number, e.g. 05998"
         aeronautical: "choose the type of certificate and enter 2 to 5 digits of the number, e.g. 1234"
         amateur: "choose the type of certificate and enter 2 to 5 digits of the number, e.g. 12345"
+      issued_from_hint: "online verification covers certificates of this type issued on or after %{date}"
       no_expiry: "Certificate without expiry date"
       national_chars:
         summary: "How to enter national characters (ą, ł, ü, č…)?"
@@ -92,6 +93,9 @@ en:
       type_not_verifiable:
         title: "Online verification is not available for this certificate type"
         body_html: "This type of certificate is not subject to online verification. To confirm it, contact UKE: %{mail}"
+      issued_before_limit:
+        title: "Online verification is not available for certificates issued before %{date}"
+        body_html: "Online verification covers certificates of this type issued on or after %{date}. To confirm an earlier certificate, contact UKE: %{mail}"
       invalid: "Complete the marked fields – the result will appear here."
       how:
         title: "How does it work?"
@@ -133,6 +137,7 @@ en:
   errors:
     messages:
       invalid_date: "is not a valid date"
+      before_verification_limit: "– online verification covers certificates of this type issued on or after %{date}"
       number_exact_digits: "must have exactly %{min} digits"
       number_digits_range: "must have from %{min} to %{max} digits"
 

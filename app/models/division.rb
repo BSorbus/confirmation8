@@ -3,8 +3,9 @@
 # Lista rodzajów włączonych do weryfikacji (divisions.enabled_in_confirmation – zaznaczane w panelu NETPAR)
 # jest pobierana z API NETPAR na żywo – raz na żądanie HTTP, bez pamięci podręcznej między żądaniami
 # i bez lokalnej kopii. Gdy NETPAR nie odpowiada, zgłaszamy Netpar::Unavailable (strona pokazuje komunikat).
+# confirmation_issued_from – weryfikacja tylko świadectw wydanych od tego dnia (ustawiane w NETPAR; nil – wszystkich).
 class Division
-  FIELDS = %i[id category number_prefix name english_name].freeze
+  FIELDS = %i[id category number_prefix name english_name confirmation_issued_from].freeze
 
   attr_reader(*FIELDS)
 
@@ -33,9 +34,13 @@ class Division
     raise
   end
 
-  def initialize(id:, category:, number_prefix:, name:, english_name:)
+  def initialize(id:, category:, number_prefix:, name:, english_name:, confirmation_issued_from: nil)
     @id, @category, @number_prefix, @name, @english_name = id, category, number_prefix, name, english_name.to_s
+    @confirmation_issued_from = Date.iso8601(confirmation_issued_from) if confirmation_issued_from.present?
   end
+
+  # Data wydania wcześniejsza niż ta, od której rodzaj podlega weryfikacji (date – Date).
+  def issued_before_limit?(date) = confirmation_issued_from.present? && date < confirmation_issued_from
 
   # Nazwa w języku strony; krajowe rodzaje bez nazwy angielskiej pokazujemy po polsku.
   def label(locale = I18n.locale)

@@ -122,4 +122,21 @@ class CertificateSearchTest < ActiveSupport::TestCase
     assert_equal "maritime", record.category_slug
     assert_not_nil record.division_id
   end
+
+  # Rodzaj GOC (id 11) podlega weryfikacji od 2018-09-01 (divisions.confirmation_issued_from w NETPAR).
+  def stub_goc_issued_from(date = "2018-09-01")
+    stub_netpar_divisions(NETPAR_DIVISIONS.map { it["id"] == 11 ? it.merge("confirmation_issued_from" => date) : it })
+    Current.reset
+  end
+
+  test "data wydania przed dniem, od którego rodzaj podlega weryfikacji – błąd pola z datą (bez zapytania do NETPAR)" do
+    stub_goc_issued_from
+    record = search # wydane 2018-08-30
+    assert_not record.valid?
+    assert_equal [ :before_verification_limit ], record.errors.details[:date_of_issue].map { it[:error] }
+    assert_match "01.09.2018", record.errors.full_messages_for(:date_of_issue).first
+
+    assert search(date_of_issue: "2018-09-01").valid?, "dzień graniczny włącznie"
+    assert_equal [ :invalid_date ], search(date_of_issue: "2018-02-30").tap(&:valid?).errors.details[:date_of_issue].map { it[:error] }
+  end
 end

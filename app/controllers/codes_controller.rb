@@ -17,6 +17,9 @@ class CodesController < CertificatesController
       render_code_outcome(:found)
     when :type_not_verifiable
       render_code_outcome(:type_not_verifiable)
+    when Netpar::IssuedBeforeLimit
+      @verifiable_from = result.verifiable_from
+      render_code_outcome(:issued_before_limit)
     else
       render_code_outcome(:not_found)
     end

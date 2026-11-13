@@ -40,6 +40,9 @@
         <%= f.label :date_of_issue, class: "field__label" do %><%= CertificateSearch.human_attribute_name(:date_of_issue) %> <span class="required" aria-hidden="true">*</span><% end %>
         <%= iso_date_field(f, search, :date_of_issue, required: true) %>
         <%= field_error(search, :date_of_issue) %>
+        <% issued_from = display_date(search.division&.confirmation_issued_from) %>
+        <span id="issued_from_hint" class="field__hint" data-certificate-form-target="issuedFromHint"
+              data-template="<%= t(".issued_from_hint", date: "%{date}") %>" <%= "hidden" unless issued_from %>><%= t(".issued_from_hint", date: issued_from) if issued_from %></span>
       </div>
       <div class="field">
         <%= f.label :valid_thru, CertificateSearch.human_attribute_name(:valid_thru), class: "field__label" %>

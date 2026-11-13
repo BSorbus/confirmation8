@@ -60,4 +60,11 @@ class CodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :service_unavailable
     assert_select ".result-card--warning"
   end
+
+  test "świadectwo wydane przed dniem weryfikacji rodzaju (403 issued_before_limit): komunikat z datą" do
+    stub_netpar_code(status: 403, body: { "error" => "Świadectwa wydane przed 2018-09-01 …", "reason" => "issued_before_limit",
+                                          "verifiable_from" => "2018-09-01" })
+    get "/pl/qrc/#{CARD_CODE}"
+    assert_select ".result-card--warning h2", text: I18n.t("certificates.result.issued_before_limit.title", date: "01.09.2018", locale: :pl)
+  end
 end

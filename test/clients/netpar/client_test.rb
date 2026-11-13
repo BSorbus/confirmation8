@@ -134,4 +134,19 @@ class Netpar::ClientTest < ActiveSupport::TestCase
     stub_netpar_code(status: 500, body: { "error" => "x" })
     assert_raises(Netpar::Unavailable) { @client.find_by_code(CARD_CODE, remote_ip: nil) }
   end
+
+  test "odmowa 403 z reason: issued_before_limit → IssuedBeforeLimit z datą; type_not_verifiable i brak reason → :type_not_verifiable" do
+    stub_netpar_token
+    stub_netpar_search(status: 403, body: { error: "…", reason: "issued_before_limit", verifiable_from: "2015-11-01" })
+    assert_equal Netpar::IssuedBeforeLimit.new(verifiable_from: Date.new(2015, 11, 1)), @client.find_certificate(@search, remote_ip: nil)
+
+    stub_netpar_code(status: 403, body: { error: "…", reason: "issued_before_limit", verifiable_from: "2015-11-01" })
+    assert_equal Date.new(2015, 11, 1), @client.find_by_code(CARD_CODE, remote_ip: nil).verifiable_from
+
+    stub_netpar_search(status: 403, body: { error: "…", reason: "type_not_verifiable" })
+    assert_equal :type_not_verifiable, @client.find_certificate(@search, remote_ip: nil)
+
+    stub_netpar_search(status: 403, body: { error: "…", reason: "issued_before_limit", verifiable_from: "1.11.2015" })
+    assert_raises(Netpar::Unavailable) { @client.find_certificate(@search, remote_ip: nil) }
+  end
 end

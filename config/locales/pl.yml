@@ -55,6 +55,7 @@ pl:
         maritime: "wybierz rodzaj świadectwa i wpisz 5 cyfr numeru, np. 05998"
         aeronautical: "wybierz rodzaj świadectwa i wpisz od 2 do 5 cyfr numeru, np. 1234"
         amateur: "wybierz rodzaj świadectwa i wpisz od 2 do 5 cyfr numeru, np. 12345"
+      issued_from_hint: "weryfikacja obejmuje świadectwa tego rodzaju wydane od %{date}"
       no_expiry: "Świadectwo bezterminowe (brak daty ważności)"
       national_chars:
         summary: "Jak wpisać znaki narodowe (ą, ł, ü, č…)?"
@@ -94,6 +95,9 @@ pl:
       type_not_verifiable:
         title: "Weryfikacja online niedostępna dla tego rodzaju świadectwa"
         body_html: "Ten rodzaj świadectwa nie podlega weryfikacji internetowej. W sprawie potwierdzenia skontaktuj się z UKE: %{mail}"
+      issued_before_limit:
+        title: "Weryfikacja online niedostępna dla świadectw wydanych przed %{date}"
+        body_html: "Weryfikacja internetowa obejmuje świadectwa tego rodzaju wydane od %{date}. W sprawie potwierdzenia wcześniejszego świadectwa skontaktuj się z UKE: %{mail}"
       invalid: "Uzupełnij zaznaczone pola – wynik pojawi się tutaj."
       how:
         title: "Jak to działa?"
@@ -138,6 +142,7 @@ pl:
       blank: "– to pole jest wymagane"
       inclusion: "nie znajduje się na liście dopuszczalnych wartości"
       invalid_date: "nie jest poprawną datą"
+      before_verification_limit: "– weryfikacja internetowa obejmuje świadectwa tego rodzaju wydane od %{date}"
       number_exact_digits: "musi mieć dokładnie %{min} cyfr"
       number_digits_range: "musi mieć od %{min} do %{max} cyfr"
       # Komunikaty neutralne gramatycznie – pasują do nazw pól w każdym rodzaju i liczbie

@@ -31,4 +31,20 @@ class DivisionTest < ActiveSupport::TestCase
     assert_raises(Netpar::Unavailable) { Division.all }
     assert_empty Division.all, "do końca żądania bez ponownych prób"
   end
+
+  # Rodzaj GOC (id 11) podlega weryfikacji od 2018-09-01 (divisions.confirmation_issued_from w NETPAR).
+  def stub_goc_issued_from(date = "2018-09-01")
+    stub_netpar_divisions(NETPAR_DIVISIONS.map { it["id"] == 11 ? it.merge("confirmation_issued_from" => date) : it })
+    Current.reset
+  end
+
+  test "data, od której rodzaj podlega weryfikacji – z NETPAR; brak pola (starszy NETPAR) – bez ograniczenia" do
+    stub_goc_issued_from
+    goc = Division.find(11)
+    assert_equal Date.new(2018, 9, 1), goc.confirmation_issued_from
+    assert goc.issued_before_limit?(Date.new(2018, 8, 31))
+    assert_not goc.issued_before_limit?(Date.new(2018, 9, 1)), "dzień graniczny włącznie"
+    assert_nil Division.find(14).confirmation_issued_from
+    assert_not Division.find(14).issued_before_limit?(Date.new(1990, 1, 1))
+  end
 end

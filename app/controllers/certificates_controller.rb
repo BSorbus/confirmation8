@@ -23,6 +23,9 @@ class CertificatesController < ApplicationController
       render_outcome(:found, :ok)
     when :type_not_verifiable # dane zgodne, ale rodzaj wyłączony z weryfikacji internetowej (NETPAR 403)
       render_outcome(:type_not_verifiable, :ok)
+    when Netpar::IssuedBeforeLimit # wydane przed dniem, od którego rodzaj podlega weryfikacji (NETPAR 403)
+      @verifiable_from = result.verifiable_from
+      render_outcome(:issued_before_limit, :ok)
     else
       render_outcome(:not_found, :ok)
     end
