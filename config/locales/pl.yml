@@ -97,7 +97,7 @@ pl:
         body_html: "Ten rodzaj świadectwa nie podlega weryfikacji internetowej. W sprawie potwierdzenia skontaktuj się z UKE: %{mail}"
       issued_before_limit:
         title: "Weryfikacja online niedostępna dla świadectw wydanych przed %{date}"
-        body_html: "Weryfikacja internetowa obejmuje świadectwa tego rodzaju wydane od %{date}. W sprawie potwierdzenia wcześniejszego świadectwa skontaktuj się z UKE: %{mail}"
+        body_html: "Weryfikacja internetowa obejmuje świadectwa tego rodzaju wydane po %{date}. W sprawie potwierdzenia wcześniejszego świadectwa skontaktuj się z UKE: %{mail}"
       invalid: "Uzupełnij zaznaczone pola – wynik pojawi się tutaj."
       how:
         title: "Jak to działa?"
