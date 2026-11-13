@@ -37,8 +37,13 @@ class CodesController < CertificatesController
     # Dane świadectwa w postaci parametrów linku (jak w kodzie QR zaświadczenia) – wypełniają formularz i ukryte pola PDF.
     def link_params(certificate)
       prefix = certificate.division.number_prefix.to_s
-      { number_prefix: prefix, number: certificate.number.delete_prefix(prefix), date_of_issue: certificate.date_of_issue.to_s,
-        valid_thru: certificate.valid_thru.to_s, name: certificate.holder.name, given_names: certificate.holder.given_names,
-        birth_date: certificate.holder.birth_date.to_s }
+      { number_prefix: prefix,
+        number: certificate.number.delete_prefix(prefix),
+        date_of_issue: certificate.date_of_issue.to_s,
+        valid_thru: certificate.valid_thru.to_s,
+        name: certificate.holder.name,
+        given_names: certificate.holder.given_names,
+        birth_date: certificate.holder.birth_date.to_s
+      }
     end
 end
