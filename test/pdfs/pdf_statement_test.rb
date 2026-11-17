@@ -122,4 +122,90 @@ class PdfStatementTest < ActiveSupport::TestCase
     assert_includes text, "informuje, że zaświadczenie:"
     assert_includes text, "określonym w ERC Report 32."
   end
+
+  # Tabela maxp osadzonych podzbiorów czcionki (config/initializers/ttfunk_maxp.rb): limity nie mniejsze niż rzeczywiste
+  # glify – inaczej Adobe Acrobat odrzuca czcionkę i błędnie pokazuje polskie litery („ą” to glif złożony).
+  test "polskie litery: osadzone czcionki z poprawną tabelą maxp (Acrobat)" do
+    @pdf = PdfStatement.new(Certificate.from_api(netpar_certificate("customer" => netpar_certificate["customer"]
+      .merge("name" => "Gątkiewicz-Żółć", "given_names" => "Łukasz Ęńś"))))
+    data = @pdf.render
+    assert_includes text_lines.join("\n"), "has been issued for Gątkiewicz-Żółć Łukasz Ęńś"
+
+    fonts = embedded_truetype_fonts(data)
+    assert_operator fonts.size, :>=, 2
+    fonts.each do |name, font|
+      maxp, actual = maxp_limits(font), glyph_maxima(font)
+      assert_operator maxp[:max_size_of_instructions], :>=, actual[:max_size_of_instructions], "#{name}: maxSizeOfInstructions"
+      assert_operator maxp[:max_points], :>=, actual[:max_points], "#{name}: maxPoints"
+      assert_operator maxp[:max_contours], :>=, actual[:max_contours], "#{name}: maxContours"
+      assert_operator maxp[:max_component_elements], :>=, actual[:max_component_elements], "#{name}: maxComponentElements"
+      assert_operator maxp[:max_component_depth], :>=, (actual[:max_component_elements].positive? ? 1 : 0), "#{name}: maxComponentDepth"
+    end
+    assert fonts.any? { |_, font| glyph_maxima(font)[:max_component_elements].positive? }, "test powinien obejmować glif złożony (np. „ą”)"
+  end
+
+  test "łatka maxp przygotowana dla używanej wersji ttfunk" do
+    assert_equal TTFUNK_MAXP_PATCHED_VERSION, Gem.loaded_specs["ttfunk"].version.to_s,
+                 "Nowa wersja ttfunk – sprawdź, czy błąd maxp jest poprawiony (zaświadczenie z „ą” w Adobe Acrobat) " \
+                 "i usuń albo dostosuj config/initializers/ttfunk_maxp.rb"
+  end
+
+  private
+    def embedded_truetype_fonts(data)
+      reader = PDF::Reader.new(StringIO.new(data))
+      reader.objects.values.filter_map do |object|
+        next unless object.is_a?(Hash) && object[:Type] == :FontDescriptor && object[:FontFile2]
+
+        [ object[:FontName].to_s, reader.objects.deref(object[:FontFile2]).unfiltered_data ]
+      end
+    end
+
+    def font_tables(font)
+      count = font.byteslice(4, 2).unpack1("n")
+      (0...count).to_h do |i|
+        tag, _checksum, offset, length = font.byteslice(12 + 16 * i, 16).unpack("a4NNN")
+        [ tag, font.byteslice(offset, length) ]
+      end
+    end
+
+    def maxp_limits(font)
+      values = font_tables(font)["maxp"].unpack("Nn14")
+      %i[version num_glyphs max_points max_contours max_composite_points max_composite_contours max_zones max_twilight_points
+         max_storage max_function_defs max_instruction_defs max_stack_elements max_size_of_instructions
+         max_component_elements max_component_depth].zip(values).to_h
+    end
+
+    # Rzeczywiste maksima z tabeli glyf: instrukcje, punkty i kontury glifów prostych, liczba składników glifów złożonych.
+    def glyph_maxima(font)
+      tables = font_tables(font)
+      num_glyphs = tables["maxp"].byteslice(4, 2).unpack1("n")
+      short = tables["head"].byteslice(50, 2).unpack1("s>").zero?
+      offsets = short ? tables["loca"].unpack("n*").map { it * 2 } : tables["loca"].unpack("N*")
+      glyf = tables["glyf"]
+      result = { max_size_of_instructions: 0, max_points: 0, max_contours: 0, max_component_elements: 0 }
+      num_glyphs.times do |gid|
+        start, stop = offsets[gid], offsets[gid + 1]
+        next if stop - start < 10
+
+        contours = glyf.byteslice(start, 2).unpack1("s>")
+        if contours >= 0
+          end_points = glyf.byteslice(start + 10, 2 * contours).unpack("n*")
+          result[:max_contours] = [ result[:max_contours], contours ].max
+          result[:max_points] = [ result[:max_points], (end_points.last || -1) + 1 ].max
+          instructions = glyf.byteslice(start + 10 + 2 * contours, 2).unpack1("n")
+          result[:max_size_of_instructions] = [ result[:max_size_of_instructions], instructions ].max
+        else
+          position, components = start + 10, 0
+          loop do
+            flags = glyf.byteslice(position, 2).unpack1("n")
+            components += 1
+            position += 4 + (flags & 1 == 1 ? 4 : 2)
+            position += if flags & 8 != 0 then 2 elsif flags & 0x40 != 0 then 4 elsif flags & 0x80 != 0 then 8 else 0 end
+            break if flags & 0x20 == 0
+          end
+          result[:max_component_elements] = [ result[:max_component_elements], components ].max
+        end
+      end
+      result
+    end
 end
