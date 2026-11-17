@@ -11,6 +11,8 @@ class StatementsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "application/pdf", response.media_type
     assert_match 'filename="GG-05998.pdf"', response.headers["Content-Disposition"]
+    assert response.headers["Content-Disposition"].start_with?("attachment"), "plik do pobrania, nie podgląd (inline) – zapis z podglądu ponawiał zapytanie GET"
+    assert_raises(ActionController::RoutingError) { Rails.application.routes.recognize_path("/pl/certificates/maritime/statement", method: :get) }
     assert_requested search, times: 1
   end
 

@@ -13,7 +13,10 @@ class StatementsController < ApplicationController
     raise Netpar::Unavailable, "brak verification_url w odpowiedzi NETPAR" if certificate.verification_url.blank?
 
     pdf = PdfStatement.new(certificate)
-    send_data pdf.render, filename: pdf.file_name, type: "application/pdf", disposition: "inline"
+    # Od razu jako plik (attachment), nie podgląd w karcie (inline): przy zapisie z podglądu przeglądarka pobiera adres
+    # ponownie metodą GET, bez danych formularza – trasy GET nie ma (dane osobowe nie trafiają do adresu), więc 404
+    # i „Plik nie był dostępny w witrynie” (zgłoszenie 2026-11).
+    send_data pdf.render, filename: pdf.file_name, type: "application/pdf", disposition: "attachment"
   rescue Netpar::Unavailable => e
     Rails.logger.error("[NETPAR] #{e.message}")
     redirect_back_to_form(t(".unavailable"))
