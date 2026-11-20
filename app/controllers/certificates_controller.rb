@@ -2,6 +2,10 @@ class CertificatesController < ApplicationController
   rate_limit to: SEARCH_RATE_LIMIT, within: 1.minute, only: :create, with: -> { render_too_many_requests }
 
   before_action :require_divisions, :set_category, :require_enabled_category
+  # Wynik weryfikacji i formularz wypełniony z linku QR zawierają dane posiadacza – bez zapisu w pamięci podręcznej
+  # przeglądarki (komputery współdzielone) i serwerów pośredniczących (raport bezpieczeństwa 2026-11-20). Także /qrc
+  # (CodesController dziedziczy).
+  before_action :no_store
 
   def new
     if params[:number].present? || params[:name].present?

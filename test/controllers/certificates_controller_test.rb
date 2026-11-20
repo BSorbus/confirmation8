@@ -325,4 +325,15 @@ class CertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "Nie znaleziono świadectwa", response.body
     assert_no_match "Pobierz zaświadczenie (PDF)", response.body
   end
+
+  test "dane posiadacza bez pamięci podręcznej (no-store): wynik weryfikacji i formularz z linku QR" do
+    stub_netpar_token
+    stub_netpar_search
+    search!
+    assert_response :success
+    assert_equal "no-store", response.headers["Cache-Control"]
+
+    get "/pl/certificates/new", params: { number_prefix: "GG-", number: "05998", name: "Kozłowski", birth_date: "1969-07-06" }
+    assert_equal "no-store", response.headers["Cache-Control"]
+  end
 end

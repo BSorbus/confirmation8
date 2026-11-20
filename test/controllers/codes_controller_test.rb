@@ -67,4 +67,11 @@ class CodesControllerTest < ActionDispatch::IntegrationTest
     get "/pl/qrc/#{CARD_CODE}"
     assert_select ".result-card--warning h2", text: I18n.t("certificates.result.issued_before_limit.title", date: "01.09.2018", locale: :pl)
   end
+
+  test "wynik po kodzie bez pamięci podręcznej (no-store)" do
+    stub_netpar_code
+    get "/pl/qrc/#{CARD_CODE}"
+    assert_response :success
+    assert_equal "no-store", response.headers["Cache-Control"]
+  end
 end

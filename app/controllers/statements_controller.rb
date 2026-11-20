@@ -4,6 +4,8 @@ class StatementsController < ApplicationController
   rate_limit to: SEARCH_RATE_LIMIT, within: 1.minute, with: -> { redirect_back_to_form(t(".too_many_requests")) }
 
   before_action :set_category
+  # Zaświadczenie z danymi posiadacza – bez zapisu w pamięci podręcznej; plik pobiera się normalnie (attachment).
+  before_action :no_store
 
   def create
     search = build_search
