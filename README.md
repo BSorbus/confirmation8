@@ -74,6 +74,7 @@ bin/brakeman       # bezpieczeństwo
 | `config/confirmation.yml` | ustawienia niezależne od serwera: limity czasu NETPAR, kategorie, Matomo |
 | `categories` w credentials (lub `CONFIRMATION_CATEGORIES`) | kategorie (zakładki) pokazywane na danym serwerze, np. `categories: [M, L]` (zmienna: `M,L`); domyślnie wszystkie – `M,L,R` z `config/confirmation.yml` |
 | `matomo.enabled` w credentials (lub `MATOMO_ENABLED`) | statystyki Matomo w produkcji (domyślnie włączone; na serwerze testowym `false`) |
+| `csp_report_only` w `config/confirmation.yml` | Content Security Policy (`config/initializers/content_security_policy.rb`): `true` – tylko raport naruszeń (nagłówek `Content-Security-Policy-Report-Only`), `false` – polityka wymuszana. Naruszenia przeglądarki wysyłają na `/csp-violation-report` – wpis `[CSP]` w logu aplikacji |
 
 ## Współpraca z NETPAR
 

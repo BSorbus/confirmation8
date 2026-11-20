@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
+  # Zgłoszenia naruszeń Content Security Policy z przeglądarek (config/initializers/content_security_policy.rb).
+  post "csp-violation-report" => "csp_reports#create"
 
   scope "(:locale)", locale: /en|pl/ do
     get "declaration", to: "pages#declaration", as: :declaration
