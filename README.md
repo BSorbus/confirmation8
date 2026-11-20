@@ -9,7 +9,7 @@ Ruby 4.0, Rails 8.1, Hotwire (Turbo, Stimulus), Bootstrap 5.3, Prawn. Bez bazy d
 ## Uruchomienie (development)
 
 ```sh
-cd confirmation8             # rvm sam przełącza na Ruby 4.0.7 (plik .ruby-version)
+cd confirmation8             # rvm sam przełącza na Ruby 4.0.10 (plik .ruby-version)
 bundle install
 bin/rails server             # http://localhost:3000
 ```
