@@ -10,9 +10,10 @@ shared:
   # kategorii żaden nie jest zaznaczony, lista rodzajów jest pusta. Serwer może pokazać mniej zakładek:
   # `categories: [M, L]` w credentials albo zmienna CONFIRMATION_CATEGORIES="M,L" – patrz initializer.
   categories: [M, L, R]
-  # Content Security Policy (config/initializers/content_security_policy.rb): true – tylko raport naruszeń
-  # (nagłówek Content-Security-Policy-Report-Only, nic nie blokuje); po sprawdzeniu na serwerach – false.
-  csp_report_only: true
+  # Content Security Policy (config/initializers/content_security_policy.rb): false – polityka wymuszana
+  # (nagłówek Content-Security-Policy); naruszenia nadal zgłaszane do logu ([CSP]). true – tylko raport
+  # (Content-Security-Policy-Report-Only, nic nie blokuje), np. na czas sprawdzania zmian w polityce.
+  csp_report_only: false
   matomo:
     enabled: false
     url: https://stats.uke.gov.pl/

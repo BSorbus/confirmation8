@@ -8,7 +8,7 @@
 # - obrazy: także data: (strzałki pól wyboru w Bootstrapie);
 # - Matomo (gdy włączone): skrypt, zapytania i piksel ze stats.uke.gov.pl;
 # - naruszenia zgłaszane na /csp-violation-report (CspReportsController – wpis w logu).
-# Tryb: confirmation.yml csp_report_only (true – tylko raport, nic nie blokuje; po sprawdzeniu – false).
+# Tryb: confirmation.yml csp_report_only (true – tylko raport, nic nie blokuje; false – wymuszana, od 2026-11-20).
 Rails.application.configure do
   # Serwer Matomo – liczony przy każdym żądaniu z bieżącej konfiguracji (włączenie w credentials serwera); bez Matomo
   # polityka nie dopuszcza żadnej obcej domeny.

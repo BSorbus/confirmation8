@@ -2,16 +2,16 @@ require "test_helper"
 
 # Content Security Policy (config/initializers/content_security_policy.rb) – raport bezpieczeństwa 2026-11-20, F-03.
 class ContentSecurityPolicyTest < ActionDispatch::IntegrationTest
-  HEADER = "Content-Security-Policy-Report-Only" # confirmation.yml csp_report_only: true
+  HEADER = "Content-Security-Policy" # confirmation.yml csp_report_only: false – polityka wymuszana
 
   def policy = response.headers[HEADER].to_s
 
   def nonce = policy[/'nonce-([^']+)'/, 1]
 
-  test "polityka: tylko własne zasoby, skrypty z nonce, raport naruszeń; tryb Report-Only" do
+  test "polityka: tylko własne zasoby, skrypty z nonce, raport naruszeń; polityka wymuszana" do
     get "/pl"
     assert_response :success
-    assert_nil response.headers["Content-Security-Policy"], "tryb Report-Only – polityka niczego nie blokuje"
+    assert_nil response.headers["Content-Security-Policy-Report-Only"], "polityka wymuszana, nie tylko raport"
     [ "default-src 'self'", "style-src 'self' 'unsafe-inline'", "img-src 'self' data:", "font-src 'self'", "connect-src 'self'",
       "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'self'", "report-uri /csp-violation-report" ]
       .each { assert_includes policy, it }
